@@ -10,7 +10,7 @@ import {renderConsoleFromComparison, renderConsoleFromReport} from './renderer/c
 import {renderCsvFromComparison, renderCsvFromReport} from './renderer/csv'
 import {renderHtmlFromComparison, renderHtmlFromReport} from './renderer/html'
 import {renderJsonReport} from './renderer/json'
-import {detectFormatFromExtension, isJsonFile, isUrl, loadReport, writeOutput} from './report'
+import {detectFormatFromExtension, isUrl, loadFileReport, writeOutput} from './report'
 import {loadSpec} from './spec'
 
 export class Runner {
@@ -44,12 +44,14 @@ export class Runner {
   private _handleBenchmarkOutput(report: Report) {
     if (this.args.output) {
       const fmt = detectFormatFromExtension(this.args.output)
+
       const rendered =
         fmt === 'json'
           ? renderJsonReport(report)
           : fmt === 'csv'
           ? renderCsvFromReport(report)
           : renderHtmlFromReport(report)
+
       writeOutput(this.args.output, rendered)
     } else {
       renderConsoleFromReport(report)
@@ -61,12 +63,14 @@ export class Runner {
 
     if (this.args.output) {
       const fmt = detectFormatFromExtension(this.args.output)
+
       const rendered =
         fmt === 'json'
           ? renderJsonReport(results)
           : fmt === 'csv'
           ? renderCsvFromComparison(results)
           : renderHtmlFromComparison(results)
+
       writeOutput(this.args.output, rendered)
     } else {
       renderConsoleFromComparison(results)
@@ -109,14 +113,9 @@ export class Runner {
       }
     }
 
-    if (isJsonFile(urlOrFile)) {
-      return loadReport(urlOrFile)
-    }
-
-    // TODO: is html or csv file?
     // TODO: is a spec url, and get base url
 
-    throw new Error(`Invalid input: ${urlOrFile}`)
+    return loadFileReport(urlOrFile)
   }
 
   private async _runAllAndCollect(scenarios: Scenario[]): Promise<Report['endpoints']> {

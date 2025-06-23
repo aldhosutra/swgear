@@ -76,6 +76,13 @@ export function renderHtmlFromReport(report: Report): string {
     </style>
   `
 
+  const meta = `
+    <div style="margin-bottom:1em;">
+      <strong>Label:</strong> ${report.label || ''}<br/>
+      <strong>Timestamp:</strong> ${report.timestamp || ''}
+    </div>
+  `
+
   const rows = Object.values(report.endpoints)
     .map(
       (e) => `
@@ -101,6 +108,7 @@ export function renderHtmlFromReport(report: Report): string {
     </head>
     <body>
       <h1>Swagbench Benchmark Report</h1>
+      ${meta}
       <table>
         <thead>
           <tr>
