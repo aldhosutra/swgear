@@ -1,6 +1,6 @@
 import * as autocannon from 'autocannon'
 
-import {Runner} from '../utils/benchmark/runner'
+import {Runner} from '../lib/benchmark/runner'
 
 export type HookName = 'onRequestResponse' | 'onScenarioComplete' | 'onScenarioStart'
 

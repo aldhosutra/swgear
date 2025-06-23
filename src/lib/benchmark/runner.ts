@@ -113,6 +113,9 @@ export class Runner {
       return loadReport(urlOrFile)
     }
 
+    // TODO: is html or csv file?
+    // TODO: is a spec url, and get base url
+
     throw new Error(`Invalid input: ${urlOrFile}`)
   }
 
