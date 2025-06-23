@@ -43,14 +43,12 @@
   ],
   "license": "MIT",
   "main": "dist/index.js",
-  
   "oclif": {
     "bin": "swgr",
     "dirname": "swgr",
     "commands": "./dist/commands",
     "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-plugins"
+      "@oclif/plugin-help"
     ],
     "topicSeparator": " ",
     "topics": {
