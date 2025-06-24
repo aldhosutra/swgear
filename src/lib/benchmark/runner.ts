@@ -3,8 +3,9 @@
 
 import * as SwaggerParser from '@apidevtools/swagger-parser'
 import * as autocannon from 'autocannon'
+import {OpenAPIV2, OpenAPIV3} from 'openapi-types'
 
-import {HookName, Report, Scenario, SWGRArgs} from '../../types'
+import {HookName, Report, Scenario, SwaggerV1Document, SWGRArgs, SWGRFlags} from '../../types'
 import {compareReports} from './compare'
 import {renderConsoleFromComparison, renderConsoleFromReport} from './renderer/console'
 import {renderCsvFromComparison, renderCsvFromReport} from './renderer/csv'
@@ -14,11 +15,19 @@ import {detectFormatFromExtension, isUrl, loadFileReport, writeOutput} from './r
 import {loadSpec} from './spec'
 
 export class Runner {
-  private args: SWGRArgs
+  private args: SWGRFlags
   private hooks: Record<HookName, Function[]>
+  private log: (message?: string, ...args: unknown[]) => void
 
-  constructor(public opts: SWGRArgs) {
-    this.args = opts
+  constructor(args: SWGRArgs, flags: SWGRFlags, logger?: (message?: string, ...args: unknown[]) => void) {
+    this.log = logger || console.log
+
+    if (args.spec && flags.spec && args.spec !== flags.spec) {
+      this.log('Warning: Both positional argument and --spec flag provided. Using positional argument.')
+    }
+
+    this.args = flags
+    this.args.spec = args.spec || flags.spec
     this.hooks = {onRequestResponse: [], onScenarioComplete: [], onScenarioStart: []}
   }
 
@@ -28,17 +37,62 @@ export class Runner {
   }
 
   async run() {
-    if (this.args.compareWith && isUrl(this.args.compareWith) && isUrl(this.args.url) && !this.args.spec) {
-      throw new Error('spec is required when benchmarking a URL')
-    }
+    this._verifyArgs()
 
-    const reportA = await this._loadReportOrRun(this.args.url, this.args.label || 'Baseline Report')
+    const reportA = await this._loadReportOrRun(await this._getBaseUrl(), this.args.label || 'Baseline Report')
 
     const reportB = this.args.compareWith
       ? await this._loadReportOrRun(this.args.compareWith, this.args.compareLabel || 'Comparison Report')
       : undefined
 
     this._handleOutput(reportA, reportB)
+  }
+
+  private async _getBaseUrl(): Promise<string> {
+    // If url is provided directly, use it
+    if (this.args.url && isUrl(this.args.url)) return this.args.url
+
+    // If spec is a URL, try to extract base URL from spec
+    if (this.args.spec && isUrl(this.args.spec)) {
+      const spec = await loadSpec(this.args.spec)
+      const api = await SwaggerParser.dereference(spec)
+
+      // OpenAPI 3.x: servers[0].url
+      const openAPIv3 = api as OpenAPIV3.Document
+      if (
+        openAPIv3.servers &&
+        Array.isArray(openAPIv3.servers) &&
+        openAPIv3.servers.length > 0 &&
+        openAPIv3.servers[0].url
+      ) {
+        return openAPIv3.servers[0].url.replace(/\/$/, '')
+      }
+
+      // Swagger 2.0: host, basePath, schemes
+      const openAPIv2 = api as OpenAPIV2.Document
+      if (typeof openAPIv2.host === 'string') {
+        const scheme = (openAPIv2.schemes && openAPIv2.schemes[0]) || 'http'
+        const basePath = openAPIv2.basePath || ''
+        return `${scheme}://${openAPIv2.host}${basePath}`.replace(/\/$/, '')
+      }
+
+      // Swagger 1.x: top-level basePath
+      const openAPIv1 = api as unknown as SwaggerV1Document
+      if (typeof openAPIv1.basePath === 'string') {
+        return openAPIv1.basePath.replace(/\/$/, '')
+      }
+
+      // Fallback: use the directory of the spec URL
+      try {
+        const url = new URL(this.args.spec)
+        url.pathname = url.pathname.replace(/\/[^/]*$/, '')
+        return url.toString().replace(/\/$/, '')
+      } catch {
+        throw new TypeError('Could not determine base URL from OpenAPI/Swagger spec or spec URL')
+      }
+    }
+
+    throw new TypeError('No valid base URL could be determined')
   }
 
   private _handleBenchmarkOutput(report: Report) {
@@ -113,8 +167,6 @@ export class Runner {
       }
     }
 
-    // TODO: is a spec url, and get base url
-
     return loadFileReport(urlOrFile)
   }
 
@@ -169,5 +221,40 @@ export class Runner {
 
     for (const h of this.hooks.onScenarioComplete) h(scenario, result)
     return result
+  }
+
+  private _verifyArgs() {
+    const isSpecUrl = this.args.spec && isUrl(this.args.spec)
+    const isComparison = Boolean(this.args.compareWith)
+
+    // 1. spec is a URL, single benchmark: only spec required
+    if (isSpecUrl && !isComparison) {
+      // OK: only spec (URL) required
+    }
+
+    // 2. spec is a file, single benchmark: require url
+    if (!isSpecUrl && !isComparison && !this.args.url) {
+      throw new Error('When using a spec file for single benchmarking, you must provide --url')
+    }
+
+    // 3. spec is a URL, comparison: require compareWith
+    if (isSpecUrl && isComparison && !this.args.compareWith) {
+      throw new Error('When using a spec URL for comparison, you must provide --compare-with')
+    }
+
+    // 4. spec is a file, comparison: require url and compareWith
+    if (!isSpecUrl && isComparison) {
+      if (!this.args.url) {
+        throw new Error('When using a spec file for comparison, you must provide --url')
+      }
+
+      if (!this.args.compareWith) {
+        throw new Error('When using a spec file for comparison, you must provide --compare-with')
+      }
+    }
+    // fallback: spec is required
+    else if (!this.args.spec) {
+      throw new Error('spec is required')
+    }
   }
 }
