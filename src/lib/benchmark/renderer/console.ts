@@ -1,10 +1,10 @@
 /* eslint-disable perfectionist/sort-objects */
-import {BenchmarkComparisonReport, BenchmarkReport} from '../../../types'
-import {formatPercent} from '../compare'
+import {BenchmarkComparisonReport, BenchmarkMetric, BenchmarkReport} from '../../../types'
+import {formatPercent, sortComparisonResults, sortEndpoints} from '../compare'
 
-export function renderConsoleFromComparison(results: BenchmarkComparisonReport) {
+export function renderConsoleFromComparison(results: BenchmarkComparisonReport, sortBy: BenchmarkMetric = 'p50') {
   console.table(
-    results.map((r) => ({
+    sortComparisonResults(results, sortBy).map((r) => ({
       method: r.method,
       path: r.path,
       'baseline rps': r.baseline.rps.toFixed(1),
@@ -37,9 +37,9 @@ export function renderConsoleFromComparison(results: BenchmarkComparisonReport) 
   )
 }
 
-export function renderConsoleFromReport(report: BenchmarkReport) {
+export function renderConsoleFromReport(report: BenchmarkReport, sortBy: BenchmarkMetric = 'p50') {
   console.table(
-    Object.values(report.endpoints).map((e) => ({
+    sortEndpoints(report.endpoints, sortBy).map((e) => ({
       method: e.method,
       path: e.path,
       rps: e.rps.toFixed(1),

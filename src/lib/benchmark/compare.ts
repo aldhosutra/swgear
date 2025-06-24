@@ -1,4 +1,4 @@
-import {BenchmarkComparisonReport, BenchmarkReport} from '../../types'
+import {BenchmarkComparisonReport, BenchmarkEndpointMetrics, BenchmarkMetric, BenchmarkReport} from '../../types'
 
 function percentChangeLatency(baseline: number, comparison: number): number {
   if (baseline === 0) return 0
@@ -46,4 +46,24 @@ export function compareReports(baseline: BenchmarkReport, target: BenchmarkRepor
   }
 
   return results
+}
+
+export function sortEndpoints(
+  endpoints: Record<string, BenchmarkEndpointMetrics>,
+  sortBy: BenchmarkMetric = 'p50',
+): BenchmarkEndpointMetrics[] {
+  return Object.values(endpoints).sort((a, b) =>
+    sortBy === 'rps' ? b.rps - a.rps : a.latency[sortBy] - b.latency[sortBy],
+  )
+}
+
+export function sortComparisonResults(
+  results: BenchmarkComparisonReport,
+  sortBy: BenchmarkMetric = 'p50',
+): BenchmarkComparisonReport {
+  return results.sort((a, b) =>
+    sortBy === 'rps'
+      ? (b.percentChange[sortBy] ?? 0) - (a.percentChange[sortBy] ?? 0)
+      : (a.percentChange[sortBy] ?? 0) - (b.percentChange[sortBy] ?? 0),
+  )
 }

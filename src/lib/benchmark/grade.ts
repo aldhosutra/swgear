@@ -1,4 +1,4 @@
-import {BenchmarkGradeThresholds, BenchmarkReport} from '../../types'
+import {BenchmarkGradeThresholds, BenchmarkMetric, BenchmarkReport} from '../../types'
 
 // Default grading thresholds
 export const DEFAULT_GRADE_THRESHOLDS = {
@@ -8,11 +8,7 @@ export const DEFAULT_GRADE_THRESHOLDS = {
   rps: {Acceptable: 10, Excellent: 100, Good: 20},
 }
 
-export function getGrade(
-  metric: 'p50' | 'p90' | 'p99' | 'rps',
-  value: number,
-  thresholds: BenchmarkGradeThresholds,
-): string {
+export function getGrade(metric: BenchmarkMetric, value: number, thresholds: BenchmarkGradeThresholds): string {
   if (metric === 'rps') {
     if (value > thresholds.Excellent) return 'Excellent'
     if (value > thresholds.Good) return 'Good'
@@ -81,17 +77,15 @@ export function parseRangeFlag(val?: string): BenchmarkGradeThresholds | undefin
   return {Acceptable: parts[2], Excellent: parts[0], Good: parts[1]}
 }
 
-export function parseGradeRangeFlag(
-  val?: string,
-): Partial<Record<'p50' | 'p90' | 'p99' | 'rps', BenchmarkGradeThresholds>> {
+export function parseGradeRangeFlag(val?: string): Partial<Record<BenchmarkMetric, BenchmarkGradeThresholds>> {
   if (!val) return {}
-  const result: Partial<Record<'p50' | 'p90' | 'p99' | 'rps', BenchmarkGradeThresholds>> = {}
+  const result: Partial<Record<BenchmarkMetric, BenchmarkGradeThresholds>> = {}
   for (const entry of val.split(';')) {
     const [metric, values] = entry.split('=')
     if (!metric || !values) continue
     const parts = values.split(',').map(Number)
     if (parts.length !== 3 || parts.some((element) => Number.isNaN(element))) continue
-    result[metric.trim() as 'p50' | 'p90' | 'p99' | 'rps'] = {
+    result[metric.trim() as BenchmarkMetric] = {
       Acceptable: parts[2],
       Excellent: parts[0],
       Good: parts[1],

@@ -1,7 +1,7 @@
-import {BenchmarkComparisonReport, BenchmarkReport} from '../../../types'
-import {formatPercent} from '../compare'
+import {BenchmarkComparisonReport, BenchmarkMetric, BenchmarkReport} from '../../../types'
+import {formatPercent, sortComparisonResults, sortEndpoints} from '../compare'
 
-export function renderHtmlFromComparison(results: BenchmarkComparisonReport): string {
+export function renderHtmlFromComparison(results: BenchmarkComparisonReport, sortBy: BenchmarkMetric = 'p50'): string {
   const style = `
     <style>
       body { font-family: sans-serif; padding: 1em; }
@@ -17,7 +17,7 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport): st
     </style>
   `
 
-  const rows = results
+  const rows = sortComparisonResults(results, sortBy)
     .map(
       (r) => `
     <tr>
@@ -113,7 +113,7 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport): st
   `
 }
 
-export function renderHtmlFromReport(report: BenchmarkReport): string {
+export function renderHtmlFromReport(report: BenchmarkReport, sortBy: BenchmarkMetric = 'p50'): string {
   const style = `
     <style>
       body { font-family: sans-serif; padding: 1em; }
@@ -126,13 +126,14 @@ export function renderHtmlFromReport(report: BenchmarkReport): string {
       .Needs\\ Improvement { color: red; }
     </style>
   `
+
   const meta = `
     <div style="margin-bottom:1em;">
       <strong>Label:</strong> ${report.label || ''}<br/>
       <strong>Timestamp:</strong> ${report.timestamp || ''}
     </div>
   `
-  const rows = Object.values(report.endpoints)
+  const rows = sortEndpoints(report.endpoints, sortBy)
     .map(
       (e) => `
     <tr>

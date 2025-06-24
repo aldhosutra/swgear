@@ -42,9 +42,10 @@ Run HTTP benchmarks against an OpenAPI/Swagger spec or API, with optional thresh
 ```
 USAGE
   $ swgr benchmark [SPEC] [--compare-label <value>] [-w <value>] [-c <value>] [-d <value>] [--grade-range
-    <value>] [--label <value>] [--latency-threshold <value>] [-o <value>] [--p50-range <value>] [--p90-range <value>]
-    [--p99-range <value>] [--param <value>...] [-p <value>...] [--rps-range <value>] [-s <value>]
-    [--throughput-threshold <value>] [-u <value>]
+    <value>] [--grade-threshold Excellent|Good|Acceptable|Needs Improvement] [--label <value>] [--latency-threshold
+    <value>] [-o <value>] [--p50-range <value>] [--p90-range <value>] [--p99-range <value>] [--param <value>...] [-p
+    <value>...] [--rps-range <value>] [--sort-by p50|p90|p99|rps] [-s <value>] [--throughput-threshold <value>] [-u
+    <value>]
 
 ARGUMENTS
   SPEC  OpenAPI/Swagger spec file or URL (positional)
@@ -61,6 +62,9 @@ FLAGS
       --grade-range=<value>           Custom grading ranges for p50, p90, p99, and rps as comma-separated values.
                                       Example: "p50=50,150,300;p90=100,300,500;p99=200,500,1000;rps=100,20,10". Each
                                       value is Excellent,Good,Acceptable.
+      --grade-threshold=<option>      Minimum allowed final grade for the benchmark (Excellent, Good, Acceptable, Needs
+                                      Improvement). Fails if the overall grade is worse.
+                                      <options: Excellent|Good|Acceptable|Needs Improvement>
       --label=<value>                 [default: Baseline Report] Label for this benchmark run
       --latency-threshold=<value>     Maximum allowed latency (ms) for p90/p95
       --p50-range=<value>             Custom grading range for p50 as comma-separated values: Excellent,Good,Acceptable.
@@ -73,6 +77,8 @@ FLAGS
                                       used multiple times.
       --rps-range=<value>             Custom grading range for rps as comma-separated values: Excellent,Good,Acceptable.
                                       Example: "100,20,10"
+      --sort-by=<option>              [default: p50] Sort comparison output by this metric (p50, p90, p99, rps)
+                                      <options: p50|p90|p99|rps>
       --throughput-threshold=<value>  Minimum allowed throughput (RPS)
 
 DESCRIPTION

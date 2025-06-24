@@ -1,6 +1,7 @@
 import {Args, Command, Flags} from '@oclif/core'
 
 import {BenchmarkRunner} from '../../lib/benchmark'
+import {BenchmarkArgs, BenchmarkFlags} from '../../types'
 
 export default class Benchmark extends Command {
   static override args = {
@@ -61,6 +62,12 @@ export default class Benchmark extends Command {
         'Custom grading range for rps as comma-separated values: Excellent,Good,Acceptable. Example: "100,20,10"',
       required: false,
     }),
+    'sort-by': Flags.string({
+      default: 'p50',
+      description: 'Sort comparison output by this metric (p50, p90, p99, rps)',
+      options: ['p50', 'p90', 'p99', 'rps'],
+      required: false,
+    }),
     spec: Flags.string({char: 's', description: 'OpenAPI/Swagger spec file or URL'}),
     'throughput-threshold': Flags.integer({description: 'Minimum allowed throughput (RPS)'}),
     url: Flags.string({char: 'u', description: 'Base URL for the API'}),
@@ -68,7 +75,7 @@ export default class Benchmark extends Command {
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Benchmark)
-    const runner = new BenchmarkRunner(args, flags, this.log)
+    const runner = new BenchmarkRunner(args as BenchmarkArgs, flags as BenchmarkFlags, this.log)
     await runner.run()
   }
 }

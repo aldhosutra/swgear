@@ -110,23 +110,25 @@ export class BenchmarkRunner {
   }
 
   private _handleBenchmarkOutput(report: BenchmarkReport) {
+    const sortBy = this.args['sort-by'] || 'p50'
     if (this.args.output) {
       const fmt = detectFormatFromExtension(this.args.output)
 
       const rendered =
         fmt === 'json'
-          ? renderJsonFromReport(report)
+          ? renderJsonFromReport(report, sortBy)
           : fmt === 'csv'
-          ? renderCsvFromReport(report)
-          : renderHtmlFromReport(report)
+          ? renderCsvFromReport(report, sortBy)
+          : renderHtmlFromReport(report, sortBy)
 
       writeOutput(this.args.output, rendered)
     } else {
-      renderConsoleFromReport(report)
+      renderConsoleFromReport(report, sortBy)
     }
   }
 
   private _handleComparisonOutput(baselineReport: BenchmarkReport, comparisonReport: BenchmarkReport) {
+    const sortBy = this.args['sort-by'] || 'p50'
     const results = compareReports(baselineReport, comparisonReport)
 
     if (this.args.output) {
@@ -134,14 +136,14 @@ export class BenchmarkRunner {
 
       const rendered =
         fmt === 'json'
-          ? renderJsonFromComparison(results)
+          ? renderJsonFromComparison(results, sortBy)
           : fmt === 'csv'
-          ? renderCsvFromComparison(results)
-          : renderHtmlFromComparison(results)
+          ? renderCsvFromComparison(results, sortBy)
+          : renderHtmlFromComparison(results, sortBy)
 
       writeOutput(this.args.output, rendered)
     } else {
-      renderConsoleFromComparison(results)
+      renderConsoleFromComparison(results, sortBy)
     }
   }
 

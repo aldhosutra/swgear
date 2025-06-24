@@ -1,7 +1,7 @@
-import {BenchmarkComparisonReport, BenchmarkReport} from '../../../types'
-import {formatPercent} from '../compare'
+import {BenchmarkComparisonReport, BenchmarkMetric, BenchmarkReport} from '../../../types'
+import {formatPercent, sortComparisonResults, sortEndpoints} from '../compare'
 
-export function renderCsvFromComparison(results: BenchmarkComparisonReport): string {
+export function renderCsvFromComparison(results: BenchmarkComparisonReport, sortBy: BenchmarkMetric = 'p50'): string {
   const header = [
     'method',
     'path',
@@ -33,7 +33,7 @@ export function renderCsvFromComparison(results: BenchmarkComparisonReport): str
     'target_grade',
   ]
 
-  const rows = results.map((r) => [
+  const rows = sortComparisonResults(results, sortBy).map((r) => [
     r.method,
     r.path,
     r.baseline.rps,
@@ -67,7 +67,7 @@ export function renderCsvFromComparison(results: BenchmarkComparisonReport): str
   return [header, ...rows].map((row) => row.map((cell) => JSON.stringify(cell)).join(',')).join('\n')
 }
 
-export function renderCsvFromReport(report: BenchmarkReport): string {
+export function renderCsvFromReport(report: BenchmarkReport, sortBy: BenchmarkMetric = 'p50'): string {
   const meta = [`label: ${JSON.stringify(report.label)}`, `timestamp: ${JSON.stringify(report.timestamp)}`].join(',')
   const header = [
     'method',
@@ -83,7 +83,8 @@ export function renderCsvFromReport(report: BenchmarkReport): string {
     'errors',
     'final_grade',
   ]
-  const rows = Object.values(report.endpoints).map((e) => [
+
+  const rows = sortEndpoints(report.endpoints, sortBy).map((e) => [
     e.method,
     e.path,
     e.rps,
@@ -97,6 +98,7 @@ export function renderCsvFromReport(report: BenchmarkReport): string {
     e.errors,
     e.grades.final,
   ])
+
   return [meta, header, ...rows]
     .map((row) => (Array.isArray(row) ? row.map((cell) => JSON.stringify(cell)).join(',') : row))
     .join('\n')

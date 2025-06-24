@@ -33,6 +33,7 @@ export type BenchmarkFlags = {
   param?: string[]
   plugins: string[]
   'rps-range'?: string
+  'sort-by'?: BenchmarkMetric
   spec: string | undefined
   'throughput-threshold': number | undefined
   url: string | undefined
@@ -96,3 +97,5 @@ export interface BenchmarkComparisonResult {
 }
 
 export type BenchmarkComparisonReport = BenchmarkComparisonResult[]
+
+export type BenchmarkMetric = 'p50' | 'p90' | 'p99' | 'rps'
