@@ -161,8 +161,15 @@ export class BenchmarkRunner {
 
       if (api.paths) {
         for (const [path, methods] of Object.entries(api.paths)) {
+          // Replace path parameters like {petId} with a default value (e.g., 1)
+          const resolvedPath = path.replaceAll(/\{[^}]+\}/g, '1')
+
           for (const [method] of Object.entries(methods)) {
-            scenarios.push({method: method as BenchmarkScenario['method'], path, url: urlOrFile + path})
+            scenarios.push({
+              method: method.toUpperCase() as BenchmarkScenario['method'],
+              path,
+              url: urlOrFile + resolvedPath,
+            })
           }
         }
       }
