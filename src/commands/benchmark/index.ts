@@ -9,9 +9,9 @@ export default class Benchmark extends Command {
   static override description =
     'Run HTTP benchmarks against an OpenAPI/Swagger spec or API, with optional thresholds for CI/CD.'
   static override examples = [
+    '$ swgr benchmark https://api.example.com/api.yaml',
     '$ swgr benchmark api.yaml --url https://api.example.com',
     '$ swgr benchmark --spec api.yaml --url https://api.example.com',
-    '$ swgr benchmark https://server.com/openapi.json',
     '$ swgr benchmark api.yaml --url https://api.example.com --latency-threshold 200 --throughput-threshold 1000',
     '$ swgr benchmark api.yaml --url https://api.example.com --compare-with https://api.staging.com',
     '$ swgr benchmark api.yaml --url https://api.example.com --output result.json',
