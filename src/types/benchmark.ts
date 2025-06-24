@@ -86,6 +86,12 @@ export interface BenchmarkComparisonResult {
   }
   method: string
   path: string
+  percentChange: {
+    p50: number
+    p90: number
+    p99: number
+    rps: number
+  }
   target: BenchmarkEndpointMetrics
 }
 
