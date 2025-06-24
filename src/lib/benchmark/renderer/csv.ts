@@ -1,6 +1,6 @@
-import {ComparisonResult, Report} from '../../../types'
+import {BenchmarkComparisonResult, BenchmarkReport} from '../../../types'
 
-export function renderCsvFromComparison(results: ComparisonResult[]): string {
+export function renderCsvFromComparison(results: BenchmarkComparisonResult[]): string {
   const header = [
     'method',
     'path',
@@ -32,7 +32,7 @@ export function renderCsvFromComparison(results: ComparisonResult[]): string {
   return [header, ...rows].map((row) => row.map((cell) => JSON.stringify(cell)).join(',')).join('\n')
 }
 
-export function renderCsvFromReport(report: Report): string {
+export function renderCsvFromReport(report: BenchmarkReport): string {
   const meta = [`label: ${JSON.stringify(report.label)}`, `timestamp: ${JSON.stringify(report.timestamp)}`].join(',')
   const header = ['method', 'path', 'rps', 'p50', 'p90', 'p99', 'errors']
   const rows = Object.values(report.endpoints).map((e) => [

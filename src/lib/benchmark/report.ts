@@ -1,7 +1,7 @@
 import {readFileSync, writeFileSync} from 'node:fs'
 import {extname} from 'node:path'
 
-import {EndpointMetrics, Report} from '../../types'
+import {BenchmarkEndpointMetrics, BenchmarkReport} from '../../types'
 
 export function writeOutput(filePath: string, content: string) {
   writeFileSync(filePath, content)
@@ -18,11 +18,11 @@ export function detectFormatFromExtension(outputPath: string): 'csv' | 'html' | 
   throw new Error(`Unsupported output file format: ${ext}`)
 }
 
-export async function loadFileReport(input: string): Promise<Report> {
+export async function loadFileReport(input: string): Promise<BenchmarkReport> {
   const raw = readFileSync(input, 'utf8')
   const ext = extname(input).toLowerCase()
 
-  let report: Report
+  let report: BenchmarkReport
   if (ext.endsWith('json')) {
     report = parseJsonReport(raw)
   } else if (ext.endsWith('csv')) {
@@ -40,7 +40,7 @@ export async function loadFileReport(input: string): Promise<Report> {
   return report
 }
 
-function isReport(obj: Record<'endpoints' | 'label' | 'timestamp', unknown>): obj is Report {
+function isReport(obj: Record<'endpoints' | 'label' | 'timestamp', unknown>): obj is BenchmarkReport {
   return (
     obj !== undefined &&
     typeof obj === 'object' &&
@@ -52,7 +52,7 @@ function isReport(obj: Record<'endpoints' | 'label' | 'timestamp', unknown>): ob
   )
 }
 
-function parseJsonReport(raw: string): Report {
+function parseJsonReport(raw: string): BenchmarkReport {
   let obj: unknown
   try {
     obj = JSON.parse(raw)
@@ -64,7 +64,7 @@ function parseJsonReport(raw: string): Report {
     throw new Error('JSON does not contain an object')
   }
 
-  const report = obj as Partial<Report>
+  const report = obj as Partial<BenchmarkReport>
   if (
     typeof report.label !== 'string' ||
     typeof report.timestamp !== 'string' ||
@@ -93,10 +93,10 @@ function parseJsonReport(raw: string): Report {
     }
   }
 
-  return report as Report
+  return report as BenchmarkReport
 }
 
-function parseCsvReport(csv: string): Report {
+function parseCsvReport(csv: string): BenchmarkReport {
   const lines = csv.trim().split(/\r?\n/)
   let label = ''
   let timestamp = ''
@@ -110,7 +110,7 @@ function parseCsvReport(csv: string): Report {
     startIdx = 1 // only header present
   }
 
-  const endpoints: Record<string, EndpointMetrics> = {}
+  const endpoints: Record<string, BenchmarkEndpointMetrics> = {}
   for (let i = startIdx; i < lines.length; i++) {
     const row = lines[i].split(',').map((cell) => JSON.parse(cell))
     const [method, path, rps, p50, p90, p99, errors] = row
@@ -146,7 +146,7 @@ function parseCsvReport(csv: string): Report {
   }
 }
 
-function parseHtmlReport(html: string): Report {
+function parseHtmlReport(html: string): BenchmarkReport {
   // Extract label and timestamp
   const labelMatch = html.match(/<strong>Label:<\/strong>\s*([^<]*)/)
   const timestampMatch = html.match(/<strong>Timestamp:<\/strong>\s*([^<]*)/)
@@ -156,7 +156,7 @@ function parseHtmlReport(html: string): Report {
   // Extract table rows from HTML
   const rowRegex = /<tr>([\s\S]*?)<\/tr>/g
   const cellRegex = /<td>([\s\S]*?)<\/td>/g
-  const endpoints: Record<string, EndpointMetrics> = {}
+  const endpoints: Record<string, BenchmarkEndpointMetrics> = {}
   const rows = [...html.matchAll(rowRegex)]
   // Skip header row, start from 1
   for (let i = 1; i < rows.length; i++) {

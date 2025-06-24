@@ -1,7 +1,7 @@
-import {ComparisonResult, Report} from '../../types'
+import {BenchmarkComparisonResult, BenchmarkReport} from '../../types'
 
-export function compareReports(baseline: Report, target: Report): ComparisonResult[] {
-  const results: ComparisonResult[] = []
+export function compareReports(baseline: BenchmarkReport, target: BenchmarkReport): BenchmarkComparisonResult[] {
+  const results: BenchmarkComparisonResult[] = []
 
   // eslint-disable-next-line guard-for-in
   for (const key in baseline.endpoints) {

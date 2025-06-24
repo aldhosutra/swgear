@@ -5,7 +5,16 @@ import * as SwaggerParser from '@apidevtools/swagger-parser'
 import * as autocannon from 'autocannon'
 import {OpenAPIV2, OpenAPIV3} from 'openapi-types'
 
-import {HookName, Logger, Report, Scenario, SwaggerV1Document, SWGRArgs, SWGRFlags} from '../../types'
+import {
+  BenchmarkArgs,
+  BenchmarkFlags,
+  BenchmarkHook,
+  BenchmarkReport,
+  BenchmarkScenario,
+  HookName,
+  Logger,
+  SwaggerV1Document,
+} from '../../types'
 import {compareReports} from './compare'
 import {renderConsoleFromComparison, renderConsoleFromReport} from './renderer/console'
 import {renderCsvFromComparison, renderCsvFromReport} from './renderer/csv'
@@ -15,11 +24,11 @@ import {detectFormatFromExtension, isUrl, loadFileReport, writeOutput} from './r
 import {loadSpec} from './spec'
 
 export class Runner {
-  private args: SWGRFlags
-  private hooks: Record<HookName, Function[]>
+  private args: BenchmarkFlags
+  private hooks: BenchmarkHook
   private log: Logger
 
-  constructor(args: SWGRArgs, flags: SWGRFlags, logger?: Logger) {
+  constructor(args: BenchmarkArgs, flags: BenchmarkFlags, logger?: Logger) {
     this.log = logger || console.log
 
     if (args.spec && flags.spec && args.spec !== flags.spec) {
@@ -95,7 +104,7 @@ export class Runner {
     throw new TypeError('No valid base URL could be determined')
   }
 
-  private _handleBenchmarkOutput(report: Report) {
+  private _handleBenchmarkOutput(report: BenchmarkReport) {
     if (this.args.output) {
       const fmt = detectFormatFromExtension(this.args.output)
 
@@ -112,7 +121,7 @@ export class Runner {
     }
   }
 
-  private _handleComparisonOutput(baselineReport: Report, comparisonReport: Report) {
+  private _handleComparisonOutput(baselineReport: BenchmarkReport, comparisonReport: BenchmarkReport) {
     const results = compareReports(baselineReport, comparisonReport)
 
     if (this.args.output) {
@@ -131,7 +140,7 @@ export class Runner {
     }
   }
 
-  private _handleOutput(reportA: Report, reportB?: Report) {
+  private _handleOutput(reportA: BenchmarkReport, reportB?: BenchmarkReport) {
     if (this.args.compareWith && reportB) {
       this._handleComparisonOutput(reportA, reportB)
       return
@@ -140,16 +149,16 @@ export class Runner {
     this._handleBenchmarkOutput(reportA)
   }
 
-  private async _loadReportOrRun(urlOrFile: string, label: string): Promise<Report> {
+  private async _loadReportOrRun(urlOrFile: string, label: string): Promise<BenchmarkReport> {
     if (isUrl(urlOrFile)) {
       const spec = await loadSpec(this.args.spec!)
       const api = await SwaggerParser.dereference(spec)
-      const scenarios: Scenario[] = []
+      const scenarios: BenchmarkScenario[] = []
 
       if (api.paths) {
         for (const [path, methods] of Object.entries(api.paths)) {
           for (const [method] of Object.entries(methods)) {
-            scenarios.push({method: method as Scenario['method'], path, url: urlOrFile + path})
+            scenarios.push({method: method as BenchmarkScenario['method'], path, url: urlOrFile + path})
           }
         }
       }
@@ -170,8 +179,8 @@ export class Runner {
     return loadFileReport(urlOrFile)
   }
 
-  private async _runAllAndCollect(scenarios: Scenario[]): Promise<Report['endpoints']> {
-    const results: Report['endpoints'] = {}
+  private async _runAllAndCollect(scenarios: BenchmarkScenario[]): Promise<BenchmarkReport['endpoints']> {
+    const results: BenchmarkReport['endpoints'] = {}
 
     for (const scenario of scenarios) {
       console.log(`\n🚀 Benchmarking ${scenario.method!.toUpperCase()} ${scenario.url}`)
@@ -195,7 +204,7 @@ export class Runner {
     return results
   }
 
-  private async _runScenario(scenario: Scenario) {
+  private async _runScenario(scenario: BenchmarkScenario) {
     for (const h of this.hooks.onScenarioStart) h(scenario)
 
     const result = await autocannon({

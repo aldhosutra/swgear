@@ -2,23 +2,16 @@ import * as autocannon from 'autocannon'
 
 import {Runner} from '../lib/benchmark/runner'
 
-export type Logger = (message?: string, ...args: unknown[]) => void
-
 export type HookName = 'onRequestResponse' | 'onScenarioComplete' | 'onScenarioStart'
 
-export type Scenario = {
-  body?: Buffer<ArrayBufferLike> | string
-  headers?: Record<string, string>
-  method: autocannon.Request['method']
-  path: string
-  url: string
-}
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+export type BenchmarkHook = Record<HookName, Function[]>
 
-export type SWGRArgs = {
+export type BenchmarkArgs = {
   spec?: string
 }
 
-export type SWGRFlags = {
+export type BenchmarkFlags = {
   compareLabel?: string
   compareWith?: string
   connections?: number
@@ -32,9 +25,17 @@ export type SWGRFlags = {
   url: string
 }
 
-export type Plugin = (runner: Runner, opts: SWGRArgs) => void
+export type BechmarkPlugin = (runner: Runner, opts: BenchmarkArgs) => void
 
-export interface EndpointMetrics {
+export type BenchmarkScenario = {
+  body?: Buffer<ArrayBufferLike> | string
+  headers?: Record<string, string>
+  method: autocannon.Request['method']
+  path: string
+  url: string
+}
+
+export interface BenchmarkEndpointMetrics {
   errors: number
   latency: {
     p50: number
@@ -46,14 +47,14 @@ export interface EndpointMetrics {
   rps: number
 }
 
-export interface Report {
-  endpoints: Record<string, EndpointMetrics> // key = method + path
+export interface BenchmarkReport {
+  endpoints: Record<string, BenchmarkEndpointMetrics> // key = method + path
   label: string
   timestamp: string
 }
 
-export interface ComparisonResult {
-  baseline: EndpointMetrics
+export interface BenchmarkComparisonResult {
+  baseline: BenchmarkEndpointMetrics
   delta: {
     p90: number
     p99: number
@@ -61,5 +62,5 @@ export interface ComparisonResult {
   }
   method: string
   path: string
-  target: EndpointMetrics
+  target: BenchmarkEndpointMetrics
 }
