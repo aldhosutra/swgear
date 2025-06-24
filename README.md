@@ -7,15 +7,14 @@ A CLI suite to supercharge your Swagger/OpenAPI workflow
 [![Downloads/week](https://img.shields.io/npm/dw/swgr.svg)](https://npmjs.org/package/swgr)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
+* [swgr](#swgr)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g swgr
 $ swgr COMMAND
@@ -27,16 +26,13 @@ USAGE
   $ swgr COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`swgr benchmark [SPEC]`](#swgr-benchmark-spec)
-- [`swgr client [FILE]`](#swgr-client-file)
-- [`swgr help [COMMAND]`](#swgr-help-command)
+* [`swgr benchmark [SPEC]`](#swgr-benchmark-spec)
+* [`swgr client [FILE]`](#swgr-client-file)
 
 ## `swgr benchmark [SPEC]`
 
@@ -106,25 +102,4 @@ EXAMPLES
 ```
 
 _See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgr/blob/v0.0.0/src/commands/client/index.ts)_
-
-## `swgr help [COMMAND]`
-
-Display help for swgr.
-
-```
-USAGE
-  $ swgr help [COMMAND...] [-n]
-
-ARGUMENTS
-  COMMAND...  Command to show help for.
-
-FLAGS
-  -n, --nested-commands  Include all nested commands in the output.
-
-DESCRIPTION
-  Display help for swgr.
-```
-
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
-
 <!-- commandsstop -->
