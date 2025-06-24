@@ -159,11 +159,19 @@ export class BenchmarkRunner {
       const api = await SwaggerParser.dereference(spec)
       const scenarios: BenchmarkScenario[] = []
 
+      // Parse custom param values from flags.param (e.g., ["petId=123", "userId=abc"])
+      const paramMap: Record<string, string> = {}
+      if (Array.isArray(this.args.param)) {
+        for (const entry of this.args.param) {
+          const [key, value] = entry.split('=')
+          if (key && value !== undefined) paramMap[key] = value
+        }
+      }
+
       if (api.paths) {
         for (const [path, methods] of Object.entries(api.paths)) {
-          // Replace path parameters like {petId} with a default value (e.g., 1)
-          const resolvedPath = path.replaceAll(/\{[^}]+\}/g, '1')
-
+          // Replace path parameters like {petId} with user-supplied or default value
+          const resolvedPath = path.replaceAll(/\{([^}]+)\}/g, (_match, p1) => paramMap[p1] ?? '1')
           for (const [method] of Object.entries(methods)) {
             scenarios.push({
               method: method.toUpperCase() as BenchmarkScenario['method'],

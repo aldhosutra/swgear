@@ -24,6 +24,11 @@ export default class Benchmark extends Command {
     label: Flags.string({default: 'Baseline Report', description: 'Label for this benchmark run'}),
     'latency-threshold': Flags.integer({description: 'Maximum allowed latency (ms) for p90/p95'}),
     output: Flags.string({char: 'o', description: 'Output file'}),
+    param: Flags.string({
+      default: [],
+      description: 'Set default value for path parameters, e.g. --param petId=123. Can be used multiple times.',
+      multiple: true,
+    }),
     plugins: Flags.string({char: 'p', default: [], description: 'Plugins to load', multiple: true}),
     spec: Flags.string({char: 's', description: 'OpenAPI/Swagger spec file or URL'}),
     'throughput-threshold': Flags.integer({description: 'Minimum allowed throughput (RPS)'}),

@@ -19,6 +19,7 @@ export type BenchmarkFlags = {
   label: string
   'latency-threshold': number | undefined
   output: string | undefined
+  param?: string[]
   plugins: string[]
   spec: string | undefined
   'throughput-threshold': number | undefined
