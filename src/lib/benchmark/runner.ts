@@ -228,7 +228,18 @@ export class BenchmarkRunner {
       url: scenario.url,
     })
 
+    if (this.args.latencyThreshold && result.latency.p90 > this.args.latencyThreshold) {
+      throw new Error(`❌ Latency p90 (${result.latency.p90}ms) exceeds threshold (${this.args.latencyThreshold}ms)`)
+    }
+
+    if (this.args.throughputThreshold && result.requests.average < this.args.throughputThreshold) {
+      throw new Error(
+        `❌ Throughput (${result.requests.average} RPS) is below threshold (${this.args.throughputThreshold} RPS)`,
+      )
+    }
+
     for (const h of this.hooks.onScenarioComplete) h(scenario, result)
+
     return result
   }
 
