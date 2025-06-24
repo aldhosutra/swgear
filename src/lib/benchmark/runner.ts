@@ -5,7 +5,7 @@ import * as SwaggerParser from '@apidevtools/swagger-parser'
 import * as autocannon from 'autocannon'
 import {OpenAPIV2, OpenAPIV3} from 'openapi-types'
 
-import {HookName, Report, Scenario, SwaggerV1Document, SWGRArgs, SWGRFlags} from '../../types'
+import {HookName, Logger, Report, Scenario, SwaggerV1Document, SWGRArgs, SWGRFlags} from '../../types'
 import {compareReports} from './compare'
 import {renderConsoleFromComparison, renderConsoleFromReport} from './renderer/console'
 import {renderCsvFromComparison, renderCsvFromReport} from './renderer/csv'
@@ -17,9 +17,9 @@ import {loadSpec} from './spec'
 export class Runner {
   private args: SWGRFlags
   private hooks: Record<HookName, Function[]>
-  private log: (message?: string, ...args: unknown[]) => void
+  private log: Logger
 
-  constructor(args: SWGRArgs, flags: SWGRFlags, logger?: (message?: string, ...args: unknown[]) => void) {
+  constructor(args: SWGRArgs, flags: SWGRFlags, logger?: Logger) {
     this.log = logger || console.log
 
     if (args.spec && flags.spec && args.spec !== flags.spec) {

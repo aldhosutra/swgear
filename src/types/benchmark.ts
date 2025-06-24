@@ -2,6 +2,8 @@ import * as autocannon from 'autocannon'
 
 import {Runner} from '../lib/benchmark/runner'
 
+export type Logger = (message?: string, ...args: unknown[]) => void
+
 export type HookName = 'onRequestResponse' | 'onScenarioComplete' | 'onScenarioStart'
 
 export type Scenario = {
