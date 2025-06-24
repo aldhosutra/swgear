@@ -11,11 +11,18 @@ export type BenchmarkArgs = {
   spec?: string
 }
 
+export type BenchmarkGradeThresholds = {
+  Acceptable: number
+  Excellent: number
+  Good: number
+}
+
 export type BenchmarkFlags = {
   'compare-label': string
   'compare-with': string | undefined
   connections: number
   duration: number
+  'grade-range'?: string
   label: string
   'latency-threshold': number | undefined
   output: string | undefined
@@ -38,6 +45,7 @@ export type BenchmarkScenario = {
 
 export interface BenchmarkEndpointMetrics {
   errors: number
+  grades: BenchmarkGrades
   latency: {
     p50: number
     p90: number
@@ -49,9 +57,17 @@ export interface BenchmarkEndpointMetrics {
 }
 
 export interface BenchmarkReport {
-  endpoints: Record<string, BenchmarkEndpointMetrics> // key = method + path
+  endpoints: Record<string, BenchmarkEndpointMetrics>
+  finalGrade: string
   label: string
   timestamp: string
+}
+
+export interface BenchmarkGrades {
+  final: string
+  p90: string
+  p99: string
+  rps: string
 }
 
 export interface BenchmarkComparisonResult {

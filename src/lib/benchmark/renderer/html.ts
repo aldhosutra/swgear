@@ -9,6 +9,10 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport): st
       th { background: #f0f0f0; }
       .pos { color: green; }
       .neg { color: red; }
+      .Excellent { color: green; }
+      .Good { color: #2a7; }
+      .Acceptable { color: orange; }
+      .Needs\\ Improvement { color: red; }
     </style>
   `
 
@@ -27,6 +31,8 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport): st
       <td>${r.baseline.latency.p99.toFixed(1)}</td>
       <td>${r.target.latency.p99.toFixed(1)}</td>
       <td class="${r.delta.p99 <= 0 ? 'pos' : 'neg'}">${r.delta.p99.toFixed(1)}</td>
+      <td class="${r.baseline.grades?.final ?? ''}">${r.baseline.grades?.final ?? ''}</td>
+      <td class="${r.target.grades?.final ?? ''}">${r.target.grades?.final ?? ''}</td>
     </tr>
   `,
     )
@@ -55,6 +61,8 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport): st
             <th>Baseline p99</th>
             <th>Target p99</th>
             <th>Δ p99</th>
+            <th>Baseline Grade</th>
+            <th>Target Grade</th>
           </tr>
         </thead>
         <tbody>
@@ -73,16 +81,18 @@ export function renderHtmlFromReport(report: BenchmarkReport): string {
       table { border-collapse: collapse; width: 100%; }
       th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
       th { background: #f0f0f0; }
+      .Excellent { color: green; }
+      .Good { color: #2a7; }
+      .Acceptable { color: orange; }
+      .Needs\\ Improvement { color: red; }
     </style>
   `
-
   const meta = `
     <div style="margin-bottom:1em;">
       <strong>Label:</strong> ${report.label || ''}<br/>
       <strong>Timestamp:</strong> ${report.timestamp || ''}
     </div>
   `
-
   const rows = Object.values(report.endpoints)
     .map(
       (e) => `
@@ -94,20 +104,23 @@ export function renderHtmlFromReport(report: BenchmarkReport): string {
       <td>${e.latency.p90.toFixed(1)}</td>
       <td>${e.latency.p99.toFixed(1)}</td>
       <td>${e.errors}</td>
+      <td class="${e.grades.p90}">${e.grades.p90}</td>
+      <td class="${e.grades.p99}">${e.grades.p99}</td>
+      <td class="${e.grades.rps}">${e.grades.rps}</td>
+      <td class="${e.grades.final}">${e.grades.final}</td>
     </tr>
   `,
     )
     .join('\n')
-
   return `
     <html>
     <head>
       <meta charset="utf-8">
-      <title>Swagbench Benchmark Report</title>
+      <title>Swagbench Report</title>
       ${style}
     </head>
     <body>
-      <h1>Swagbench Benchmark Report</h1>
+      <h1>Swagbench Report</h1>
       ${meta}
       <table>
         <thead>
@@ -119,6 +132,10 @@ export function renderHtmlFromReport(report: BenchmarkReport): string {
             <th>p90</th>
             <th>p99</th>
             <th>Errors</th>
+            <th>p90 Grade</th>
+            <th>p99 Grade</th>
+            <th>RPS Grade</th>
+            <th>Final Grade</th>
           </tr>
         </thead>
         <tbody>

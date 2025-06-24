@@ -1,7 +1,9 @@
+/* eslint-disable camelcase */
 import {readFileSync, writeFileSync} from 'node:fs'
 import {extname} from 'node:path'
 
 import {BenchmarkEndpointMetrics, BenchmarkReport} from '../../types'
+import {aggregateFinalGrades} from './grade'
 
 export function writeOutput(filePath: string, content: string) {
   writeFileSync(filePath, content)
@@ -104,6 +106,28 @@ function parseJsonReport(raw: string): BenchmarkReport {
   return report as BenchmarkReport
 }
 
+function isValidRowOrCells(rowOrCells: string[] | unknown[], line: number): boolean {
+  const [method, path, rps, p50, p90, p99, errors, p90_grade, p99_grade, rps_grade, final_grade] = rowOrCells
+  if (
+    method === undefined ||
+    path === undefined ||
+    rps === undefined ||
+    p50 === undefined ||
+    p90 === undefined ||
+    p99 === undefined ||
+    p90_grade === undefined ||
+    p99_grade === undefined ||
+    rps_grade === undefined ||
+    final_grade === undefined ||
+    errors === undefined
+  ) {
+    process.exitCode = 1
+    throw new Error(`Invalid or missing report field(s) at line ${line}`)
+  }
+
+  return true
+}
+
 function parseCsvReport(csv: string): BenchmarkReport {
   const lines = csv.trim().split(/\r?\n/)
   let label = ''
@@ -121,22 +145,17 @@ function parseCsvReport(csv: string): BenchmarkReport {
   const endpoints: Record<string, BenchmarkEndpointMetrics> = {}
   for (let i = startIdx; i < lines.length; i++) {
     const row = lines[i].split(',').map((cell) => JSON.parse(cell))
-    const [method, path, rps, p50, p90, p99, errors] = row
-    if (
-      method === undefined ||
-      path === undefined ||
-      rps === undefined ||
-      p50 === undefined ||
-      p90 === undefined ||
-      p99 === undefined ||
-      errors === undefined
-    ) {
-      process.exitCode = 1
-      throw new Error(`Invalid or missing field(s) in CSV report at line ${i + 1}`)
-    }
+    const [method, path, rps, p50, p90, p99, errors, p90_grade, p99_grade, rps_grade, final_grade] = row
+    isValidRowOrCells(row, i + 1)
 
     endpoints[method + path] = {
       errors: Number(errors),
+      grades: {
+        final: final_grade,
+        p90: p90_grade,
+        p99: p99_grade,
+        rps: rps_grade,
+      },
       latency: {
         p50: Number(p50),
         p90: Number(p90),
@@ -150,6 +169,7 @@ function parseCsvReport(csv: string): BenchmarkReport {
 
   return {
     endpoints,
+    finalGrade: aggregateFinalGrades(endpoints),
     label,
     timestamp,
   }
@@ -167,26 +187,22 @@ function parseHtmlReport(html: string): BenchmarkReport {
   const cellRegex = /<td>([\s\S]*?)<\/td>/g
   const endpoints: Record<string, BenchmarkEndpointMetrics> = {}
   const rows = [...html.matchAll(rowRegex)]
+
   // Skip header row, start from 1
   for (let i = 1; i < rows.length; i++) {
     const cells = [...rows[i][1].matchAll(cellRegex)].map((m) => m[1].replaceAll(/<[^>]+>/g, '').trim())
     if (cells.length < 7) continue
-    const [method, path, rps, p50, p90, p99, errors] = cells
-    if (
-      method === undefined ||
-      path === undefined ||
-      rps === undefined ||
-      p50 === undefined ||
-      p90 === undefined ||
-      p99 === undefined ||
-      errors === undefined
-    ) {
-      process.exitCode = 1
-      throw new Error(`Invalid or missing field(s) in HTML report at row ${i}`)
-    }
+    const [method, path, rps, p50, p90, p99, errors, p90_grade, p99_grade, rps_grade, final_grade] = cells
+    isValidRowOrCells(cells, i)
 
     endpoints[method + path] = {
       errors: Number(errors),
+      grades: {
+        final: final_grade,
+        p90: p90_grade,
+        p99: p99_grade,
+        rps: rps_grade,
+      },
       latency: {
         p50: Number(p50),
         p90: Number(p90),
@@ -200,6 +216,7 @@ function parseHtmlReport(html: string): BenchmarkReport {
 
   return {
     endpoints,
+    finalGrade: aggregateFinalGrades(endpoints),
     label,
     timestamp,
   }

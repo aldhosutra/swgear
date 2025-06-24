@@ -21,6 +21,11 @@ export default class Benchmark extends Command {
     'compare-with': Flags.string({char: 'w', description: 'Comparison URL or report'}),
     connections: Flags.integer({char: 'c', default: 10, description: 'Number of concurrent connections'}),
     duration: Flags.integer({char: 'd', default: 10, description: 'Duration of the benchmark in seconds'}),
+    'grade-range': Flags.string({
+      description:
+        'Custom grading ranges for p90, p99, and rps as JSON. Example: {"p90":{"Excellent":100,"Good":300,"Acceptable":500},"p99":{"Excellent":200,"Good":500,"Acceptable":1000},"rps":{"Excellent":100,"Good":20,"Acceptable":10}}',
+      required: false,
+    }),
     label: Flags.string({default: 'Baseline Report', description: 'Label for this benchmark run'}),
     'latency-threshold': Flags.integer({description: 'Maximum allowed latency (ms) for p90/p95'}),
     output: Flags.string({char: 'o', description: 'Output file'}),

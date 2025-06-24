@@ -16,6 +16,7 @@ import {
   SwaggerV1Document,
 } from '../../types'
 import {compareReports} from './compare'
+import {aggregateGrades, DEFAULT_GRADE_THRESHOLDS, getGrade} from './grade'
 import {renderConsoleFromComparison, renderConsoleFromReport} from './renderer/console'
 import {renderCsvFromComparison, renderCsvFromReport} from './renderer/csv'
 import {renderHtmlFromComparison, renderHtmlFromReport} from './renderer/html'
@@ -188,8 +189,36 @@ export class BenchmarkRunner {
       }
 
       const endpoints = await this._runAllAndCollect(scenarios)
+
+      // Optionally, you can aggregate a global grade for the whole report
+      const allFinalGrades = new Set(Object.values(endpoints).map((e) => e.grades?.final))
+      const finalGrade = aggregateGrades({
+        p90: allFinalGrades.has('Needs Improvement')
+          ? 'Needs Improvement'
+          : allFinalGrades.has('Acceptable')
+          ? 'Acceptable'
+          : allFinalGrades.has('Good')
+          ? 'Good'
+          : 'Excellent',
+        p99: allFinalGrades.has('Needs Improvement')
+          ? 'Needs Improvement'
+          : allFinalGrades.has('Acceptable')
+          ? 'Acceptable'
+          : allFinalGrades.has('Good')
+          ? 'Good'
+          : 'Excellent',
+        rps: allFinalGrades.has('Needs Improvement')
+          ? 'Needs Improvement'
+          : allFinalGrades.has('Acceptable')
+          ? 'Acceptable'
+          : allFinalGrades.has('Good')
+          ? 'Good'
+          : 'Excellent',
+      })
+
       return {
         endpoints,
+        finalGrade,
         label,
         timestamp: new Date().toISOString(),
       }
@@ -201,14 +230,33 @@ export class BenchmarkRunner {
   private async _runAllAndCollect(scenarios: BenchmarkScenario[]): Promise<BenchmarkReport['endpoints']> {
     const results: BenchmarkReport['endpoints'] = {}
 
+    // Parse grade thresholds from flag or use default
+    let gradeThresholds = DEFAULT_GRADE_THRESHOLDS
+    if (this.args['grade-range']) {
+      try {
+        const parsed = JSON.parse(this.args['grade-range'])
+        gradeThresholds = {...DEFAULT_GRADE_THRESHOLDS, ...parsed}
+      } catch {
+        this.log('Invalid --grade-range JSON, using defaults.')
+      }
+    }
+
     for (const scenario of scenarios) {
       console.log(`\n🚀 Benchmarking ${scenario.method!.toUpperCase()} ${scenario.url}`)
       // eslint-disable-next-line no-await-in-loop
       const result = await this._runScenario(scenario)
 
       const key = `${scenario.method!.toUpperCase()} ${scenario.path}`
+      const grades = {
+        p90: getGrade('p90', result.latency.p90, gradeThresholds.p90),
+        p99: getGrade('p99', result.latency.p99, gradeThresholds.p99),
+        rps: getGrade('rps', result.requests.average, gradeThresholds.rps),
+      }
+      const final = aggregateGrades(grades)
+
       results[key] = {
         errors: result.errors,
+        grades: {...grades, final},
         latency: {
           p50: result.latency.p50,
           p90: result.latency.p90,

@@ -13,6 +13,8 @@ export function renderCsvFromComparison(results: BenchmarkComparisonReport): str
     'baseline_p99',
     'target_p99',
     'delta_p99',
+    'baseline_grade',
+    'target_grade',
   ]
 
   const rows = results.map((r) => [
@@ -27,6 +29,8 @@ export function renderCsvFromComparison(results: BenchmarkComparisonReport): str
     r.baseline.latency.p99,
     r.target.latency.p99,
     r.delta.p99,
+    r.baseline.grades?.final ?? '',
+    r.target.grades?.final ?? '',
   ])
 
   return [header, ...rows].map((row) => row.map((cell) => JSON.stringify(cell)).join(',')).join('\n')
@@ -34,7 +38,19 @@ export function renderCsvFromComparison(results: BenchmarkComparisonReport): str
 
 export function renderCsvFromReport(report: BenchmarkReport): string {
   const meta = [`label: ${JSON.stringify(report.label)}`, `timestamp: ${JSON.stringify(report.timestamp)}`].join(',')
-  const header = ['method', 'path', 'rps', 'p50', 'p90', 'p99', 'errors']
+  const header = [
+    'method',
+    'path',
+    'rps',
+    'p50',
+    'p90',
+    'p99',
+    'errors',
+    'p90_grade',
+    'p99_grade',
+    'rps_grade',
+    'final_grade',
+  ]
   const rows = Object.values(report.endpoints).map((e) => [
     e.method,
     e.path,
@@ -43,6 +59,10 @@ export function renderCsvFromReport(report: BenchmarkReport): string {
     e.latency.p90,
     e.latency.p99,
     e.errors,
+    e.grades.p90,
+    e.grades.p99,
+    e.grades.rps,
+    e.grades.final,
   ])
   return [meta, header, ...rows]
     .map((row) => (Array.isArray(row) ? row.map((cell) => JSON.stringify(cell)).join(',') : row))
