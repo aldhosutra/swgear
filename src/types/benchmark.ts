@@ -26,8 +26,12 @@ export type BenchmarkFlags = {
   label: string
   'latency-threshold': number | undefined
   output: string | undefined
+  'p50-range'?: string
+  'p90-range'?: string
+  'p99-range'?: string
   param?: string[]
   plugins: string[]
+  'rps-range'?: string
   spec: string | undefined
   'throughput-threshold': number | undefined
   url: string | undefined

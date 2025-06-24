@@ -16,7 +16,7 @@ import {
   SwaggerV1Document,
 } from '../../types'
 import {compareReports} from './compare'
-import {aggregateGrades, DEFAULT_GRADE_THRESHOLDS, getGrade} from './grade'
+import {aggregateGrades, DEFAULT_GRADE_THRESHOLDS, getGrade, parseGradeRangeFlag, parseRangeFlag} from './grade'
 import {renderConsoleFromComparison, renderConsoleFromReport} from './renderer/console'
 import {renderCsvFromComparison, renderCsvFromReport} from './renderer/csv'
 import {renderHtmlFromComparison, renderHtmlFromReport} from './renderer/html'
@@ -227,19 +227,30 @@ export class BenchmarkRunner {
     return loadFileReport(urlOrFile)
   }
 
+  private _parseGradeTresholds() {
+    // Parse grade thresholds from flags
+    const gradeThresholds = {...DEFAULT_GRADE_THRESHOLDS}
+    // Per-metric flags override grade-range, which overrides defaults
+    const gradeRange = parseGradeRangeFlag(this.args['grade-range'])
+    const p50 = parseRangeFlag(this.args['p50-range'])
+    const p90 = parseRangeFlag(this.args['p90-range'])
+    const p99 = parseRangeFlag(this.args['p99-range'])
+    const rps = parseRangeFlag(this.args['rps-range'])
+    if (gradeRange.p50) gradeThresholds.p50 = gradeRange.p50
+    if (gradeRange.p90) gradeThresholds.p90 = gradeRange.p90
+    if (gradeRange.p99) gradeThresholds.p99 = gradeRange.p99
+    if (gradeRange.rps) gradeThresholds.rps = gradeRange.rps
+    if (p50) gradeThresholds.p50 = p50
+    if (p90) gradeThresholds.p90 = p90
+    if (p99) gradeThresholds.p99 = p99
+    if (rps) gradeThresholds.rps = rps
+
+    return gradeThresholds
+  }
+
   private async _runAllAndCollect(scenarios: BenchmarkScenario[]): Promise<BenchmarkReport['endpoints']> {
     const results: BenchmarkReport['endpoints'] = {}
-
-    // Parse grade thresholds from flag or use default
-    let gradeThresholds = DEFAULT_GRADE_THRESHOLDS
-    if (this.args['grade-range']) {
-      try {
-        const parsed = JSON.parse(this.args['grade-range'])
-        gradeThresholds = {...DEFAULT_GRADE_THRESHOLDS, ...parsed}
-      } catch {
-        this.log('Invalid --grade-range JSON, using defaults.')
-      }
-    }
+    const gradeThresholds = this._parseGradeTresholds()
 
     for (const scenario of scenarios) {
       console.log(`\n🚀 Benchmarking ${scenario.method!.toUpperCase()} ${scenario.url}`)

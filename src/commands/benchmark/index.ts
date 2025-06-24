@@ -23,18 +23,38 @@ export default class Benchmark extends Command {
     duration: Flags.integer({char: 'd', default: 10, description: 'Duration of the benchmark in seconds'}),
     'grade-range': Flags.string({
       description:
-        'Custom grading ranges for p90, p99, and rps as JSON. Example: {"p90":{"Excellent":100,"Good":300,"Acceptable":500},"p99":{"Excellent":200,"Good":500,"Acceptable":1000},"rps":{"Excellent":100,"Good":20,"Acceptable":10}}',
+        'Custom grading ranges for p50, p90, p99, and rps as comma-separated values. Example: "p50=50,150,300;p90=100,300,500;p99=200,500,1000;rps=100,20,10". Each value is Excellent,Good,Acceptable.',
       required: false,
     }),
     label: Flags.string({default: 'Baseline Report', description: 'Label for this benchmark run'}),
     'latency-threshold': Flags.integer({description: 'Maximum allowed latency (ms) for p90/p95'}),
     output: Flags.string({char: 'o', description: 'Output file'}),
+    'p50-range': Flags.string({
+      description:
+        'Custom grading range for p50 as comma-separated values: Excellent,Good,Acceptable. Example: "50,150,300"',
+      required: false,
+    }),
+    'p90-range': Flags.string({
+      description:
+        'Custom grading range for p90 as comma-separated values: Excellent,Good,Acceptable. Example: "100,300,500"',
+      required: false,
+    }),
+    'p99-range': Flags.string({
+      description:
+        'Custom grading range for p99 as comma-separated values: Excellent,Good,Acceptable. Example: "200,500,1000"',
+      required: false,
+    }),
     param: Flags.string({
       default: [],
       description: 'Set default value for path parameters, e.g. --param petId=123. Can be used multiple times.',
       multiple: true,
     }),
     plugins: Flags.string({char: 'p', default: [], description: 'Plugins to load', multiple: true}),
+    'rps-range': Flags.string({
+      description:
+        'Custom grading range for rps as comma-separated values: Excellent,Good,Acceptable. Example: "100,20,10"',
+      required: false,
+    }),
     spec: Flags.string({char: 's', description: 'OpenAPI/Swagger spec file or URL'}),
     'throughput-threshold': Flags.integer({description: 'Minimum allowed throughput (RPS)'}),
     url: Flags.string({char: 'u', description: 'Base URL for the API'}),

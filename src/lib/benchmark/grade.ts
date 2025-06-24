@@ -73,3 +73,30 @@ export function aggregateFinalGrades(endpoints: BenchmarkReport['endpoints']) {
 
   return finalGrade
 }
+
+export function parseRangeFlag(val?: string): BenchmarkGradeThresholds | undefined {
+  if (!val) return undefined
+  const parts = val.split(',').map(Number)
+  if (parts.length !== 3 || parts.some((element) => Number.isNaN(element))) return undefined
+  return {Acceptable: parts[2], Excellent: parts[0], Good: parts[1]}
+}
+
+export function parseGradeRangeFlag(
+  val?: string,
+): Partial<Record<'p50' | 'p90' | 'p99' | 'rps', BenchmarkGradeThresholds>> {
+  if (!val) return {}
+  const result: Partial<Record<'p50' | 'p90' | 'p99' | 'rps', BenchmarkGradeThresholds>> = {}
+  for (const entry of val.split(';')) {
+    const [metric, values] = entry.split('=')
+    if (!metric || !values) continue
+    const parts = values.split(',').map(Number)
+    if (parts.length !== 3 || parts.some((element) => Number.isNaN(element))) continue
+    result[metric.trim() as 'p50' | 'p90' | 'p99' | 'rps'] = {
+      Acceptable: parts[2],
+      Excellent: parts[0],
+      Good: parts[1],
+    }
+  }
+
+  return result
+}
