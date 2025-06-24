@@ -1,27 +1,38 @@
 import {Args, Command, Flags} from '@oclif/core'
 
+import {BenchmarkRunner} from '../../lib/benchmark'
+
 export default class Benchmark extends Command {
   static override args = {
-    file: Args.string({description: 'file to read'}),
+    spec: Args.string({description: 'OpenAPI/Swagger spec file or URL (positional)', required: false}),
   }
-  static override description = 'describe the command here'
+  static override description =
+    'Run HTTP benchmarks against an OpenAPI/Swagger spec or API, with optional thresholds for CI/CD.'
   static override examples = [
-    '<%= config.bin %> <%= command.id %>',
+    '$ swgr benchmark api.yaml --url https://api.example.com',
+    '$ swgr benchmark --spec api.yaml --url https://api.example.com',
+    '$ swgr benchmark https://server.com/openapi.json',
+    '$ swgr benchmark api.yaml --url https://api.example.com --latency-threshold 200 --throughput-threshold 1000',
+    '$ swgr benchmark api.yaml --url https://api.example.com --compare-with https://api.staging.com',
+    '$ swgr benchmark api.yaml --url https://api.example.com --output result.json',
   ]
   static override flags = {
-    // flag with no value (-f, --force)
-    force: Flags.boolean({char: 'f'}),
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'name to print'}),
+    'compare-label': Flags.string({default: 'Comparison Report', description: 'Label for the comparison run'}),
+    'compare-with': Flags.string({char: 'w', description: 'Comparison URL or report'}),
+    connections: Flags.integer({char: 'c', default: 10, description: 'Number of concurrent connections'}),
+    duration: Flags.integer({char: 'd', default: 10, description: 'Duration of the benchmark in seconds'}),
+    label: Flags.string({default: 'Baseline Report', description: 'Label for this benchmark run'}),
+    'latency-threshold': Flags.integer({description: 'Maximum allowed latency (ms) for p90/p95'}),
+    output: Flags.string({char: 'o', description: 'Output file'}),
+    plugins: Flags.string({char: 'p', default: [], description: 'Plugins to load', multiple: true}),
+    spec: Flags.string({char: 's', description: 'OpenAPI/Swagger spec file or URL'}),
+    'throughput-threshold': Flags.integer({description: 'Minimum allowed throughput (RPS)'}),
+    url: Flags.string({char: 'u', description: 'Base URL for the API'}),
   }
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Benchmark)
-
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /Users/aldhosutra/Documents/Personal/project/swgr/src/commands/benchmark.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
-    }
+    const runner = new BenchmarkRunner(args, flags, this.log)
+    await runner.run()
   }
 }

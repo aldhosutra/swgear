@@ -12,17 +12,17 @@ export type BenchmarkArgs = {
 }
 
 export type BenchmarkFlags = {
-  compareLabel?: string
-  compareWith?: string
-  connections?: number
-  duration?: number
-  label?: string
-  latencyThreshold?: number
-  output?: string
-  plugins?: string[]
-  spec?: string
-  throughputThreshold?: number
-  url: string
+  'compare-label': string
+  'compare-with': string | undefined
+  connections: number
+  duration: number
+  label: string
+  'latency-threshold': number | undefined
+  output: string | undefined
+  plugins: string[]
+  spec: string | undefined
+  'throughput-threshold': number | undefined
+  url: string | undefined
 }
 
 export type BechmarkPlugin = (runner: BenchmarkRunner, opts: BenchmarkArgs) => void

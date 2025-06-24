@@ -52,10 +52,10 @@ export class BenchmarkRunner {
   async run() {
     this._verifyArgs()
 
-    const reportA = await this._loadReportOrRun(await this._getBaseUrl(), this.args.label || 'Baseline Report')
+    const reportA = await this._loadReportOrRun(await this._getBaseUrl(), this.args.label)
 
-    const reportB = this.args.compareWith
-      ? await this._loadReportOrRun(this.args.compareWith, this.args.compareLabel || 'Comparison Report')
+    const reportB = this.args['compare-with']
+      ? await this._loadReportOrRun(this.args['compare-with'], this.args['compare-label'])
       : undefined
 
     this._handleOutput(reportA, reportB)
@@ -145,7 +145,7 @@ export class BenchmarkRunner {
   }
 
   private _handleOutput(reportA: BenchmarkReport, reportB?: BenchmarkReport) {
-    if (this.args.compareWith && reportB) {
+    if (this.args['compare-with'] && reportB) {
       this._handleComparisonOutput(reportA, reportB)
       return
     }
@@ -232,15 +232,17 @@ export class BenchmarkRunner {
       url: scenario.url,
     })
 
-    if (this.args.latencyThreshold && result.latency.p90 > this.args.latencyThreshold) {
-      process.exitCode = 1
-      throw new Error(`❌ Latency p90 (${result.latency.p90}ms) exceeds threshold (${this.args.latencyThreshold}ms)`)
-    }
-
-    if (this.args.throughputThreshold && result.requests.average < this.args.throughputThreshold) {
+    if (this.args['latency-threshold'] && result.latency.p90 > this.args['latency-threshold']) {
       process.exitCode = 1
       throw new Error(
-        `❌ Throughput (${result.requests.average} RPS) is below threshold (${this.args.throughputThreshold} RPS)`,
+        `❌ Latency p90 (${result.latency.p90}ms) exceeds threshold (${this.args['latency-threshold']}ms)`,
+      )
+    }
+
+    if (this.args['throughput-threshold'] && result.requests.average < this.args['throughput-threshold']) {
+      process.exitCode = 1
+      throw new Error(
+        `❌ Throughput (${result.requests.average} RPS) is below threshold (${this.args['throughput-threshold']} RPS)`,
       )
     }
 
@@ -251,33 +253,33 @@ export class BenchmarkRunner {
 
   private _verifyArgs() {
     const isSpecUrl = this.args.spec && isUrl(this.args.spec)
-    const isComparison = Boolean(this.args.compareWith)
+    const isComparison = Boolean(this.args['compare-with'])
 
     // 1. spec is a URL, single benchmark: only spec required
     if (isSpecUrl && !isComparison) {
       // OK: only spec (URL) required
     }
 
-    // 2. spec is a file, single benchmark: require url
+    // 2. spec is a file, single benchmark: require --url
     if (!isSpecUrl && !isComparison && !this.args.url) {
       process.exitCode = 1
       throw new Error('When using a spec file for single benchmarking, you must provide --url')
     }
 
-    // 3. spec is a URL, comparison: require compareWith
-    if (isSpecUrl && isComparison && !this.args.compareWith) {
+    // 3. spec is a URL, comparison: require --compare-with
+    if (isSpecUrl && isComparison && !this.args['compare-with']) {
       process.exitCode = 1
       throw new Error('When using a spec URL for comparison, you must provide --compare-with')
     }
 
-    // 4. spec is a file, comparison: require url and compareWith
+    // 4. spec is a file, comparison: require --url and --compare-with
     if (!isSpecUrl && isComparison) {
       if (!this.args.url) {
         process.exitCode = 1
         throw new Error('When using a spec file for comparison, you must provide --url')
       }
 
-      if (!this.args.compareWith) {
+      if (!this.args['compare-with']) {
         process.exitCode = 1
         throw new Error('When using a spec file for comparison, you must provide --compare-with')
       }
