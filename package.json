@@ -52,17 +52,22 @@
     "bin": "swgr",
     "dirname": "swgr",
     "commands": "./dist/commands",
-    "plugins": [],
+    "plugins": [
+      "@oclif/plugin-help"
+    ],
     "topicSeparator": " ",
     "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
+      "benchmark": {
+        "description": "Run performance benchmarks against your OpenAPI/Swagger API."
+      },
+      "client": {
+        "description": "Generate a TypeScript client from your OpenAPI/Swagger spec."
       }
     }
   },
   "repository": "aldhosutra/swgr",
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "shx rm tsconfig.tsbuildinfo && shx rm -rf dist && tsc -b",
     "lint": "eslint",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
