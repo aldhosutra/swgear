@@ -278,6 +278,18 @@ export class BenchmarkRunner {
         path: scenario.path,
         rps: result.requests.average,
       }
+
+      if (this.args['grade-threshold']) {
+        const allowed = ['Excellent', 'Good', 'Acceptable', 'Needs Improvement']
+
+        const thresholdIdx = allowed.indexOf(this.args['grade-threshold'])
+        const actualIdx = allowed.indexOf(final)
+
+        if (actualIdx > thresholdIdx) {
+          process.exitCode = 1
+          throw new Error(`❌ Final grade (${final}) is worse than threshold (${this.args['grade-threshold']})`)
+        }
+      }
     }
 
     return results

@@ -26,6 +26,12 @@ export default class Benchmark extends Command {
         'Custom grading ranges for p50, p90, p99, and rps as comma-separated values. Example: "p50=50,150,300;p90=100,300,500;p99=200,500,1000;rps=100,20,10". Each value is Excellent,Good,Acceptable.',
       required: false,
     }),
+    'grade-threshold': Flags.string({
+      description:
+        'Minimum allowed final grade for the benchmark (Excellent, Good, Acceptable, Needs Improvement). Fails if the overall grade is worse.',
+      options: ['Excellent', 'Good', 'Acceptable', 'Needs Improvement'],
+      required: false,
+    }),
     label: Flags.string({default: 'Baseline Report', description: 'Label for this benchmark run'}),
     'latency-threshold': Flags.integer({description: 'Maximum allowed latency (ms) for p90/p95'}),
     output: Flags.string({char: 'o', description: 'Output file'}),

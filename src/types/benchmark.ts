@@ -23,6 +23,7 @@ export type BenchmarkFlags = {
   connections: number
   duration: number
   'grade-range'?: string
+  'grade-threshold'?: string
   label: string
   'latency-threshold': number | undefined
   output: string | undefined
