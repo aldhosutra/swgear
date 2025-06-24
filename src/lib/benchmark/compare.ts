@@ -12,6 +12,7 @@ export function compareReports(baseline: BenchmarkReport, target: BenchmarkRepor
     results.push({
       baseline: base,
       delta: {
+        p50: targ.latency.p50 - base.latency.p50,
         p90: targ.latency.p90 - base.latency.p90,
         p99: targ.latency.p99 - base.latency.p99,
         rps: targ.rps - base.rps,

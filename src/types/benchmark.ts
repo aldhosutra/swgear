@@ -65,6 +65,7 @@ export interface BenchmarkReport {
 
 export interface BenchmarkGrades {
   final: string
+  p50: string
   p90: string
   p99: string
   rps: string
@@ -73,6 +74,7 @@ export interface BenchmarkGrades {
 export interface BenchmarkComparisonResult {
   baseline: BenchmarkEndpointMetrics
   delta: {
+    p50: number
     p90: number
     p99: number
     rps: number

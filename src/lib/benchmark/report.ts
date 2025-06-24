@@ -107,7 +107,7 @@ function parseJsonReport(raw: string): BenchmarkReport {
 }
 
 function isValidRowOrCells(rowOrCells: string[] | unknown[], line: number): boolean {
-  const [method, path, rps, p50, p90, p99, errors, p90_grade, p99_grade, rps_grade, final_grade] = rowOrCells
+  const [method, path, rps, p50, p50_grade, p90, p90_grade, p99, p99_grade, errors, rps_grade, final_grade] = rowOrCells
   if (
     method === undefined ||
     path === undefined ||
@@ -115,6 +115,7 @@ function isValidRowOrCells(rowOrCells: string[] | unknown[], line: number): bool
     p50 === undefined ||
     p90 === undefined ||
     p99 === undefined ||
+    p50_grade === undefined ||
     p90_grade === undefined ||
     p99_grade === undefined ||
     rps_grade === undefined ||
@@ -145,13 +146,14 @@ function parseCsvReport(csv: string): BenchmarkReport {
   const endpoints: Record<string, BenchmarkEndpointMetrics> = {}
   for (let i = startIdx; i < lines.length; i++) {
     const row = lines[i].split(',').map((cell) => JSON.parse(cell))
-    const [method, path, rps, p50, p90, p99, errors, p90_grade, p99_grade, rps_grade, final_grade] = row
+    const [method, path, rps, p50, p50_grade, p90, p90_grade, p99, p99_grade, errors, rps_grade, final_grade] = row
     isValidRowOrCells(row, i + 1)
 
     endpoints[method + path] = {
       errors: Number(errors),
       grades: {
         final: final_grade,
+        p50: p50_grade,
         p90: p90_grade,
         p99: p99_grade,
         rps: rps_grade,
@@ -192,13 +194,14 @@ function parseHtmlReport(html: string): BenchmarkReport {
   for (let i = 1; i < rows.length; i++) {
     const cells = [...rows[i][1].matchAll(cellRegex)].map((m) => m[1].replaceAll(/<[^>]+>/g, '').trim())
     if (cells.length < 7) continue
-    const [method, path, rps, p50, p90, p99, errors, p90_grade, p99_grade, rps_grade, final_grade] = cells
+    const [method, path, rps, p50, p50_grade, p90, p90_grade, p99, p99_grade, errors, rps_grade, final_grade] = cells
     isValidRowOrCells(cells, i)
 
     endpoints[method + path] = {
       errors: Number(errors),
       grades: {
         final: final_grade,
+        p50: p50_grade,
         p90: p90_grade,
         p99: p99_grade,
         rps: rps_grade,

@@ -248,6 +248,7 @@ export class BenchmarkRunner {
 
       const key = `${scenario.method!.toUpperCase()} ${scenario.path}`
       const grades = {
+        p50: getGrade('p50', result.latency.p50, gradeThresholds.p50),
         p90: getGrade('p90', result.latency.p90, gradeThresholds.p90),
         p99: getGrade('p99', result.latency.p99, gradeThresholds.p99),
         rps: getGrade('rps', result.requests.average, gradeThresholds.rps),
