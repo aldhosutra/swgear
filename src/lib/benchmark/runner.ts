@@ -41,7 +41,11 @@ export class BenchmarkRunner {
   }
 
   registerHook(name: HookName, fn: Function) {
-    if (!this.hooks[name]) throw new Error(`Unknown hook ${name}`)
+    if (!this.hooks[name]) {
+      process.exitCode = 1
+      throw new Error(`Unknown hook ${name}`)
+    }
+
     this.hooks[name].push(fn)
   }
 
@@ -229,10 +233,12 @@ export class BenchmarkRunner {
     })
 
     if (this.args.latencyThreshold && result.latency.p90 > this.args.latencyThreshold) {
+      process.exitCode = 1
       throw new Error(`❌ Latency p90 (${result.latency.p90}ms) exceeds threshold (${this.args.latencyThreshold}ms)`)
     }
 
     if (this.args.throughputThreshold && result.requests.average < this.args.throughputThreshold) {
+      process.exitCode = 1
       throw new Error(
         `❌ Throughput (${result.requests.average} RPS) is below threshold (${this.args.throughputThreshold} RPS)`,
       )
@@ -254,26 +260,31 @@ export class BenchmarkRunner {
 
     // 2. spec is a file, single benchmark: require url
     if (!isSpecUrl && !isComparison && !this.args.url) {
+      process.exitCode = 1
       throw new Error('When using a spec file for single benchmarking, you must provide --url')
     }
 
     // 3. spec is a URL, comparison: require compareWith
     if (isSpecUrl && isComparison && !this.args.compareWith) {
+      process.exitCode = 1
       throw new Error('When using a spec URL for comparison, you must provide --compare-with')
     }
 
     // 4. spec is a file, comparison: require url and compareWith
     if (!isSpecUrl && isComparison) {
       if (!this.args.url) {
+        process.exitCode = 1
         throw new Error('When using a spec file for comparison, you must provide --url')
       }
 
       if (!this.args.compareWith) {
+        process.exitCode = 1
         throw new Error('When using a spec file for comparison, you must provide --compare-with')
       }
     }
     // fallback: spec is required
     else if (!this.args.spec) {
+      process.exitCode = 1
       throw new Error('spec is required')
     }
   }

@@ -15,6 +15,8 @@ export function detectFormatFromExtension(outputPath: string): 'csv' | 'html' | 
   if (ext.endsWith('json')) return 'json'
   if (ext.endsWith('csv')) return 'csv'
   if (ext.endsWith('html') || ext.endsWith('htm')) return 'html'
+
+  process.exitCode = 1
   throw new Error(`Unsupported output file format: ${ext}`)
 }
 
@@ -30,10 +32,12 @@ export async function loadFileReport(input: string): Promise<BenchmarkReport> {
   } else if (ext.endsWith('html') || ext.endsWith('htm')) {
     report = parseHtmlReport(raw)
   } else {
+    process.exitCode = 1
     throw new Error(`Unsupported input: ${input}`)
   }
 
   if (!isReport(report)) {
+    process.exitCode = 1
     throw new Error('Loaded file is not a valid Report')
   }
 
@@ -57,10 +61,12 @@ function parseJsonReport(raw: string): BenchmarkReport {
   try {
     obj = JSON.parse(raw)
   } catch {
+    process.exitCode = 1
     throw new Error('Invalid JSON format')
   }
 
   if (!obj || typeof obj !== 'object') {
+    process.exitCode = 1
     throw new Error('JSON does not contain an object')
   }
 
@@ -72,6 +78,7 @@ function parseJsonReport(raw: string): BenchmarkReport {
     typeof report.endpoints !== 'object' ||
     Array.isArray(report.endpoints)
   ) {
+    process.exitCode = 1
     throw new Error('JSON report missing required fields: label, timestamp, or endpoints')
   }
 
@@ -89,6 +96,7 @@ function parseJsonReport(raw: string): BenchmarkReport {
       typeof endpoint.latency.p90 !== 'number' ||
       typeof endpoint.latency.p99 !== 'number'
     ) {
+      process.exitCode = 1
       throw new Error(`Invalid or missing field(s) in JSON report endpoint: ${key}`)
     }
   }
@@ -123,6 +131,7 @@ function parseCsvReport(csv: string): BenchmarkReport {
       p99 === undefined ||
       errors === undefined
     ) {
+      process.exitCode = 1
       throw new Error(`Invalid or missing field(s) in CSV report at line ${i + 1}`)
     }
 
@@ -172,6 +181,7 @@ function parseHtmlReport(html: string): BenchmarkReport {
       p99 === undefined ||
       errors === undefined
     ) {
+      process.exitCode = 1
       throw new Error(`Invalid or missing field(s) in HTML report at row ${i}`)
     }
 
