@@ -42,8 +42,8 @@ Run HTTP benchmarks against an OpenAPI/Swagger spec or API, with optional thresh
 ```
 USAGE
   $ swgr benchmark [SPEC] [--compare-label <value>] [-w <value>] [-c <value>] [-d <value>] [--label <value>]
-    [--latency-threshold <value>] [-o <value>] [-p <value>...] [-s <value>] [--throughput-threshold <value>] [-u
-    <value>]
+    [--latency-threshold <value>] [-o <value>] [--param <value>...] [-p <value>...] [-s <value>] [--throughput-threshold
+    <value>] [-u <value>]
 
 ARGUMENTS
   SPEC  OpenAPI/Swagger spec file or URL (positional)
@@ -59,6 +59,8 @@ FLAGS
       --compare-label=<value>         [default: Comparison Report] Label for the comparison run
       --label=<value>                 [default: Baseline Report] Label for this benchmark run
       --latency-threshold=<value>     Maximum allowed latency (ms) for p90/p95
+      --param=<value>...              [default: ] Set default value for path parameters, e.g. --param petId=123. Can be
+                                      used multiple times.
       --throughput-threshold=<value>  Minimum allowed throughput (RPS)
 
 DESCRIPTION
