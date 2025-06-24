@@ -24,24 +24,24 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport): st
       <td>${r.path}</td>
       <td>${r.baseline.rps.toFixed(1)}</td>
       <td>${r.target.rps.toFixed(1)}</td>
-      <td class="${r.delta.rps >= 0 ? 'pos' : 'neg'}">${r.delta.rps.toFixed(1)}</td>
+      <td>${r.delta.rps.toFixed(1)}</td>
+      <td class="${r.baseline.grades.rps}">${r.baseline.grades.rps}</td>
+      <td class="${r.target.grades.rps}">${r.target.grades.rps}</td>
       <td>${r.baseline.latency.p50.toFixed(1)}</td>
       <td>${r.target.latency.p50.toFixed(1)}</td>
       <td>${r.delta.p50.toFixed(1)}</td>
-      <td>${r.baseline.latency.p90.toFixed(1)}</td>
-      <td>${r.target.latency.p90.toFixed(1)}</td>
-      <td class="${r.delta.p90 <= 0 ? 'pos' : 'neg'}">${r.delta.p90.toFixed(1)}</td>
-      <td>${r.baseline.latency.p99.toFixed(1)}</td>
-      <td>${r.target.latency.p99.toFixed(1)}</td>
-      <td class="${r.delta.p99 <= 0 ? 'pos' : 'neg'}">${r.delta.p99.toFixed(1)}</td>
       <td class="${r.baseline.grades.p50}">${r.baseline.grades.p50}</td>
       <td class="${r.target.grades.p50}">${r.target.grades.p50}</td>
+      <td>${r.baseline.latency.p90.toFixed(1)}</td>
+      <td>${r.target.latency.p90.toFixed(1)}</td>
+      <td>${r.delta.p90.toFixed(1)}</td>
       <td class="${r.baseline.grades.p90}">${r.baseline.grades.p90}</td>
       <td class="${r.target.grades.p90}">${r.target.grades.p90}</td>
+      <td>${r.baseline.latency.p99.toFixed(1)}</td>
+      <td>${r.target.latency.p99.toFixed(1)}</td>
+      <td>${r.delta.p99.toFixed(1)}</td>
       <td class="${r.baseline.grades.p99}">${r.baseline.grades.p99}</td>
       <td class="${r.target.grades.p99}">${r.target.grades.p99}</td>
-      <td class="${r.baseline.grades.rps}">${r.baseline.grades.rps}</td>
-      <td class="${r.target.grades.rps}">${r.target.grades.rps}</td>
       <td class="${r.baseline.grades.final}">${r.baseline.grades.final}</td>
       <td class="${r.target.grades.final}">${r.target.grades.final}</td>
     </tr>
@@ -66,23 +66,23 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport): st
             <th>Baseline RPS</th>
             <th>Target RPS</th>
             <th>Δ RPS</th>
+            <th>Baseline RPS Grade</th>
+            <th>Target RPS Grade</th>
             <th>Baseline p50</th>
             <th>Target p50</th>
             <th>Δ p50</th>
+            <th>Baseline p50 Grade</th>
+            <th>Target p50 Grade</th>
             <th>Baseline p90</th>
             <th>Target p90</th>
             <th>Δ p90</th>
+            <th>Baseline p90 Grade</th>
+            <th>Target p90 Grade</th>
             <th>Baseline p99</th>
             <th>Target p99</th>
             <th>Δ p99</th>
-            <th>Baseline p50 Grade</th>
-            <th>Target p50 Grade</th>
-            <th>Baseline p90 Grade</th>
-            <th>Target p90 Grade</th>
             <th>Baseline p99 Grade</th>
             <th>Target p99 Grade</th>
-            <th>Baseline RPS Grade</th>
-            <th>Target RPS Grade</th>
             <th>Baseline Grade</th>
             <th>Target Grade</th>
           </tr>
@@ -122,6 +122,7 @@ export function renderHtmlFromReport(report: BenchmarkReport): string {
       <td>${e.method}</td>
       <td>${e.path}</td>
       <td>${e.rps.toFixed(1)}</td>
+      <td class="${e.grades.rps}">${e.grades.rps}</td>
       <td>${e.latency.p50.toFixed(1)}</td>
       <td class="${e.grades.p50}">${e.grades.p50}</td>
       <td>${e.latency.p90.toFixed(1)}</td>
@@ -129,7 +130,6 @@ export function renderHtmlFromReport(report: BenchmarkReport): string {
       <td>${e.latency.p99.toFixed(1)}</td>
       <td class="${e.grades.p99}">${e.grades.p99}</td>
       <td>${e.errors}</td>
-      <td class="${e.grades.rps}">${e.grades.rps}</td>
       <td class="${e.grades.final}">${e.grades.final}</td>
     </tr>
   `,
@@ -151,6 +151,7 @@ export function renderHtmlFromReport(report: BenchmarkReport): string {
             <th>Method</th>
             <th>Path</th>
             <th>RPS</th>
+            <th>RPS Grade</th>
             <th>p50</th>
             <th>p50 Grade</th>
             <th>p90</th>
@@ -158,7 +159,6 @@ export function renderHtmlFromReport(report: BenchmarkReport): string {
             <th>p99</th>
             <th>p99 Grade</th>
             <th>Errors</th>
-            <th>RPS Grade</th>
             <th>Final Grade</th>
           </tr>
         </thead>

@@ -107,7 +107,7 @@ function parseJsonReport(raw: string): BenchmarkReport {
 }
 
 function isValidRowOrCells(rowOrCells: string[] | unknown[], line: number): boolean {
-  const [method, path, rps, p50, p50_grade, p90, p90_grade, p99, p99_grade, errors, rps_grade, final_grade] = rowOrCells
+  const [method, path, rps, rps_grade, p50, p50_grade, p90, p90_grade, p99, p99_grade, errors, final_grade] = rowOrCells
   if (
     method === undefined ||
     path === undefined ||
@@ -146,7 +146,7 @@ function parseCsvReport(csv: string): BenchmarkReport {
   const endpoints: Record<string, BenchmarkEndpointMetrics> = {}
   for (let i = startIdx; i < lines.length; i++) {
     const row = lines[i].split(',').map((cell) => JSON.parse(cell))
-    const [method, path, rps, p50, p50_grade, p90, p90_grade, p99, p99_grade, errors, rps_grade, final_grade] = row
+    const [method, path, rps, rps_grade, p50, p50_grade, p90, p90_grade, p99, p99_grade, errors, final_grade] = row
     isValidRowOrCells(row, i + 1)
 
     endpoints[method + path] = {
@@ -194,7 +194,7 @@ function parseHtmlReport(html: string): BenchmarkReport {
   for (let i = 1; i < rows.length; i++) {
     const cells = [...rows[i][1].matchAll(cellRegex)].map((m) => m[1].replaceAll(/<[^>]+>/g, '').trim())
     if (cells.length < 7) continue
-    const [method, path, rps, p50, p50_grade, p90, p90_grade, p99, p99_grade, errors, rps_grade, final_grade] = cells
+    const [method, path, rps, rps_grade, p50, p50_grade, p90, p90_grade, p99, p99_grade, errors, final_grade] = cells
     isValidRowOrCells(cells, i)
 
     endpoints[method + path] = {
