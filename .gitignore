@@ -6,8 +6,7 @@
 /tmp
 /node_modules
 oclif.manifest.json
-
-
+tsconfig.tsbuildinfo
 
 yarn.lock
 pnpm-lock.yaml

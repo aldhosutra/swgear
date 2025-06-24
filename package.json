@@ -67,7 +67,7 @@
   },
   "repository": "aldhosutra/swgr",
   "scripts": {
-    "build": "shx rm tsconfig.tsbuildinfo && shx rm -rf dist && tsc -b",
+    "build": "shx rm -f tsconfig.tsbuildinfo && shx rm -rf dist && tsc -b",
     "lint": "eslint",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
