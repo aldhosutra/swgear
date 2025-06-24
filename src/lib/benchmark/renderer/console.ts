@@ -1,6 +1,6 @@
-import {BenchmarkComparisonResult, BenchmarkReport} from '../../../types'
+import {BenchmarkComparisonReport, BenchmarkReport} from '../../../types'
 
-export function renderConsoleFromComparison(results: BenchmarkComparisonResult[]) {
+export function renderConsoleFromComparison(results: BenchmarkComparisonReport) {
   console.table(
     results.map((r) => ({
       method: r.method,

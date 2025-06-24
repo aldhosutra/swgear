@@ -1,6 +1,6 @@
 import * as autocannon from 'autocannon'
 
-import {Runner} from '../lib/benchmark/runner'
+import {BenchmarkRunner} from '../lib/benchmark/runner'
 
 export type HookName = 'onRequestResponse' | 'onScenarioComplete' | 'onScenarioStart'
 
@@ -25,7 +25,7 @@ export type BenchmarkFlags = {
   url: string
 }
 
-export type BechmarkPlugin = (runner: Runner, opts: BenchmarkArgs) => void
+export type BechmarkPlugin = (runner: BenchmarkRunner, opts: BenchmarkArgs) => void
 
 export type BenchmarkScenario = {
   body?: Buffer<ArrayBufferLike> | string
@@ -64,3 +64,5 @@ export interface BenchmarkComparisonResult {
   path: string
   target: BenchmarkEndpointMetrics
 }
+
+export type BenchmarkComparisonReport = BenchmarkComparisonResult[]

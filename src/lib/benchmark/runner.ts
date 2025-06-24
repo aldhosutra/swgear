@@ -19,11 +19,11 @@ import {compareReports} from './compare'
 import {renderConsoleFromComparison, renderConsoleFromReport} from './renderer/console'
 import {renderCsvFromComparison, renderCsvFromReport} from './renderer/csv'
 import {renderHtmlFromComparison, renderHtmlFromReport} from './renderer/html'
-import {renderJsonReport} from './renderer/json'
+import {renderJsonFromComparison, renderJsonFromReport} from './renderer/json'
 import {detectFormatFromExtension, isUrl, loadFileReport, writeOutput} from './report'
 import {loadSpec} from './spec'
 
-export class Runner {
+export class BenchmarkRunner {
   private args: BenchmarkFlags
   private hooks: BenchmarkHook
   private log: Logger
@@ -110,7 +110,7 @@ export class Runner {
 
       const rendered =
         fmt === 'json'
-          ? renderJsonReport(report)
+          ? renderJsonFromReport(report)
           : fmt === 'csv'
           ? renderCsvFromReport(report)
           : renderHtmlFromReport(report)
@@ -129,7 +129,7 @@ export class Runner {
 
       const rendered =
         fmt === 'json'
-          ? renderJsonReport(results)
+          ? renderJsonFromComparison(results)
           : fmt === 'csv'
           ? renderCsvFromComparison(results)
           : renderHtmlFromComparison(results)

@@ -1,6 +1,6 @@
-import {BenchmarkComparisonResult, BenchmarkReport} from '../../../types'
+import {BenchmarkComparisonReport, BenchmarkReport} from '../../../types'
 
-export function renderHtmlFromComparison(results: BenchmarkComparisonResult[]): string {
+export function renderHtmlFromComparison(results: BenchmarkComparisonReport): string {
   const style = `
     <style>
       body { font-family: sans-serif; padding: 1em; }

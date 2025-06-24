@@ -1,5 +1,9 @@
-import {BenchmarkComparisonResult, BenchmarkReport} from '../../../types'
+import {BenchmarkComparisonReport, BenchmarkReport} from '../../../types'
 
-export function renderJsonReport(input: BenchmarkComparisonResult[] | BenchmarkReport, pretty: boolean = true): string {
+export function renderJsonFromReport(input: BenchmarkReport, pretty: boolean = true): string {
+  return JSON.stringify(input, null, pretty ? 2 : 0)
+}
+
+export function renderJsonFromComparison(input: BenchmarkComparisonReport, pretty: boolean = true): string {
   return JSON.stringify(input, null, pretty ? 2 : 0)
 }

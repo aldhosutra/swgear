@@ -1,6 +1,6 @@
-import {BenchmarkComparisonResult, BenchmarkReport} from '../../../types'
+import {BenchmarkComparisonReport, BenchmarkReport} from '../../../types'
 
-export function renderCsvFromComparison(results: BenchmarkComparisonResult[]): string {
+export function renderCsvFromComparison(results: BenchmarkComparisonReport): string {
   const header = [
     'method',
     'path',
