@@ -7,7 +7,6 @@ import {aggregateFinalGrades} from './grade'
 
 export function writeOutput(filePath: string, content: string) {
   writeFileSync(filePath, content)
-  console.log(`\n📄 Report saved to ${filePath}`)
 }
 
 export const isUrl = (v: string) => /^https?:\/\//.test(v)

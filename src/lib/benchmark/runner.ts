@@ -17,6 +17,7 @@ import {
 } from '../../types'
 import {compareReports} from './compare'
 import {aggregateGrades, DEFAULT_GRADE_THRESHOLDS, getGrade, parseGradeRangeFlag, parseRangeFlag} from './grade'
+import {BenchmarkProgressBar} from './progress'
 import {renderConsoleFromComparison, renderConsoleFromReport} from './renderer/console'
 import {renderCsvFromComparison, renderCsvFromReport} from './renderer/csv'
 import {renderHtmlFromComparison, renderHtmlFromReport} from './renderer/html'
@@ -29,8 +30,8 @@ export class BenchmarkRunner {
   private hooks: BenchmarkHook
   private log: Logger
 
-  constructor(args: BenchmarkArgs, flags: BenchmarkFlags, logger?: Logger) {
-    this.log = logger || console.log
+  constructor(args: BenchmarkArgs, flags: BenchmarkFlags, logger: Logger) {
+    this.log = logger
 
     if (args.spec && flags.spec && args.spec !== flags.spec) {
       this.log('Warning: Both positional argument and --spec flag provided. Using positional argument.')
@@ -122,6 +123,7 @@ export class BenchmarkRunner {
           : renderHtmlFromReport(report, sortBy)
 
       writeOutput(this.args.output, rendered)
+      // this.log(`\n📄 Report saved to ${this.args.output}`)
     } else {
       renderConsoleFromReport(report, sortBy)
     }
@@ -142,6 +144,7 @@ export class BenchmarkRunner {
           : renderHtmlFromComparison(results, sortBy)
 
       writeOutput(this.args.output, rendered)
+      // this.log(`\n📄 Report saved to ${this.args.output}`)
     } else {
       renderConsoleFromComparison(results, sortBy)
     }
@@ -254,8 +257,13 @@ export class BenchmarkRunner {
     const results: BenchmarkReport['endpoints'] = {}
     const gradeThresholds = this._parseGradeTresholds()
 
+    BenchmarkProgressBar.create(scenarios.length)
+
     for (const scenario of scenarios) {
-      console.log(`\n🚀 Benchmarking ${scenario.method!.toUpperCase()} ${scenario.url}`)
+      // this.log('test')
+      // this.log(`\n🚀 Benchmarking ${scenario.method!.toUpperCase()} ${scenario.url}`)
+      BenchmarkProgressBar.update(scenario.url, scenario.method!.toUpperCase())
+
       // eslint-disable-next-line no-await-in-loop
       const result = await this._runScenario(scenario)
 
@@ -292,7 +300,11 @@ export class BenchmarkRunner {
           throw new Error(`❌ Final grade (${final}) is worse than threshold (${this.args['grade-threshold']})`)
         }
       }
+
+      BenchmarkProgressBar.increment()
     }
+
+    BenchmarkProgressBar.stop()
 
     return results
   }
