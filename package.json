@@ -1,12 +1,12 @@
 {
-  "name": "swgr",
+  "name": "swgear",
   "description": "A CLI suite to supercharge your Swagger/OpenAPI workflow",
   "version": "0.0.1",
   "author": "aldhosutra",
   "bin": {
-    "swgr": "./bin/run.js"
+    "swgear": "./bin/run.js"
   },
-  "bugs": "https://github.com/aldhosutra/swgr/issues",
+  "bugs": "https://github.com/aldhosutra/swgear/issues",
   "dependencies": {
     "@apidevtools/swagger-parser": "^12.0.0",
     "@oclif/core": "^4",
@@ -44,15 +44,15 @@
     "./dist",
     "./oclif.manifest.json"
   ],
-  "homepage": "https://swgr.js.org",
+  "homepage": "https://swgear.js.org",
   "keywords": [
     "oclif"
   ],
   "license": "MIT",
   "main": "dist/index.js",
   "oclif": {
-    "bin": "swgr",
-    "dirname": "swgr",
+    "bin": "swgear",
+    "dirname": "swgear",
     "commands": "./dist/commands",
     "plugins": [
       "@oclif/plugin-help"
@@ -69,7 +69,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/aldhosutra/swgr.git"
+    "url": "git+https://github.com/aldhosutra/swgear.git"
   },
   "scripts": {
     "build": "shx rm -f tsconfig.tsbuildinfo && shx rm -rf dist && tsc -b",

@@ -1,49 +1,53 @@
-![Header](https://raw.githubusercontent.com/aldhosutra/swgr/HEAD/website/static/img/docusaurus-social-card.jpg)
+![Header](https://raw.githubusercontent.com/aldhosutra/swgear/HEAD/website/static/img/docusaurus-social-card.jpg)
 
-# swgr
+# swgear
 
 A CLI suite to supercharge your Swagger/OpenAPI workflow
 
 [![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/swgr.svg)](https://npmjs.org/package/swgr)
-[![Downloads/week](https://img.shields.io/npm/dw/swgr.svg)](https://npmjs.org/package/swgr)
+[![Version](https://img.shields.io/npm/v/swgear.svg)](https://npmjs.org/package/swgear)
+[![Downloads/week](https://img.shields.io/npm/dw/swgear.svg)](https://npmjs.org/package/swgear)
 
 <!-- toc -->
-* [swgr](#swgr)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [swgear](#swgear)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
-$ npm install -g swgr
-$ swgr COMMAND
+$ npm install -g swgear
+$ swgear COMMAND
 running command...
-$ swgr (--version)
-swgr/0.0.1 darwin-arm64 node-v18.20.3
-$ swgr --help [COMMAND]
+$ swgear (--version)
+swgear/0.0.1 darwin-arm64 node-v18.20.3
+$ swgear --help [COMMAND]
 USAGE
-  $ swgr COMMAND
+  $ swgear COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`swgr benchmark [SPEC]`](#swgr-benchmark-spec)
-* [`swgr client [FILE]`](#swgr-client-file)
-* [`swgr help [COMMAND]`](#swgr-help-command)
 
-## `swgr benchmark [SPEC]`
+- [`swgear benchmark [SPEC]`](#swgear-benchmark-spec)
+- [`swgear client [FILE]`](#swgear-client-file)
+- [`swgear help [COMMAND]`](#swgear-help-command)
+
+## `swgear benchmark [SPEC]`
 
 Run HTTP benchmarks against an OpenAPI/Swagger spec or API, with optional thresholds for CI/CD.
 
 ```
 USAGE
-  $ swgr benchmark [SPEC] [--compare-label <value>] [-w <value>] [-c <value>] [-d <value>] [--grade-range
+  $ swgear benchmark [SPEC] [--compare-label <value>] [-w <value>] [-c <value>] [-d <value>] [--grade-range
     <value>] [--grade-threshold Excellent|Good|Acceptable|Needs Improvement] [--label <value>] [--latency-threshold
     <value>] [-o <value>] [--p50-range <value>] [--p90-range <value>] [--p99-range <value>] [--param <value>...] [-p
     <value>...] [--rps-range <value>] [--sort-by p50|p90|p99|rps] [-s <value>] [--throughput-threshold <value>] [-u
@@ -87,28 +91,28 @@ DESCRIPTION
   Run HTTP benchmarks against an OpenAPI/Swagger spec or API, with optional thresholds for CI/CD.
 
 EXAMPLES
-  $ swgr benchmark https://api.example.com/api.yaml
+  $ swgear benchmark https://api.example.com/api.yaml
 
-  $ swgr benchmark api.yaml --url https://api.example.com
+  $ swgear benchmark api.yaml --url https://api.example.com
 
-  $ swgr benchmark --spec api.yaml --url https://api.example.com
+  $ swgear benchmark --spec api.yaml --url https://api.example.com
 
-  $ swgr benchmark api.yaml --url https://api.example.com --latency-threshold 200 --throughput-threshold 1000
+  $ swgear benchmark api.yaml --url https://api.example.com --latency-threshold 200 --throughput-threshold 1000
 
-  $ swgr benchmark api.yaml --url https://api.example.com --compare-with https://api.staging.com
+  $ swgear benchmark api.yaml --url https://api.example.com --compare-with https://api.staging.com
 
-  $ swgr benchmark api.yaml --url https://api.example.com --output result.json
+  $ swgear benchmark api.yaml --url https://api.example.com --output result.json
 ```
 
-_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgr/blob/v0.0.1/src/commands/benchmark/index.ts)_
+_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.1/src/commands/benchmark/index.ts)_
 
-## `swgr client [FILE]`
+## `swgear client [FILE]`
 
 Generate a TypeScript client from your OpenAPI/Swagger spec. (COMING SOON)
 
 ```
 USAGE
-  $ swgr client [FILE] [-f] [-n <value>]
+  $ swgear client [FILE] [-f] [-n <value>]
 
 ARGUMENTS
   FILE  file to read
@@ -121,18 +125,18 @@ DESCRIPTION
   Generate a TypeScript client from your OpenAPI/Swagger spec. (COMING SOON)
 
 EXAMPLES
-  $ swgr client
+  $ swgear client
 ```
 
-_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgr/blob/v0.0.1/src/commands/client/index.ts)_
+_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.1/src/commands/client/index.ts)_
 
-## `swgr help [COMMAND]`
+## `swgear help [COMMAND]`
 
-Display help for swgr.
+Display help for swgear.
 
 ```
 USAGE
-  $ swgr help [COMMAND...] [-n]
+  $ swgear help [COMMAND...] [-n]
 
 ARGUMENTS
   COMMAND...  Command to show help for.
@@ -141,8 +145,9 @@ FLAGS
   -n, --nested-commands  Include all nested commands in the output.
 
 DESCRIPTION
-  Display help for swgr.
+  Display help for swgear.
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
+
 <!-- commandsstop -->
