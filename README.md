@@ -1,3 +1,5 @@
+![Header](https://raw.githubusercontent.com/aldhosutra/swgr/HEAD/website/static/img/docusaurus-social-card.jpg)
+
 # swgr
 
 A CLI suite to supercharge your Swagger/OpenAPI workflow
@@ -7,14 +9,16 @@ A CLI suite to supercharge your Swagger/OpenAPI workflow
 [![Downloads/week](https://img.shields.io/npm/dw/swgr.svg)](https://npmjs.org/package/swgr)
 
 <!-- toc -->
-* [swgr](#swgr)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [swgr](#swgr)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g swgr
 $ swgr COMMAND
@@ -26,14 +30,16 @@ USAGE
   $ swgr COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`swgr benchmark [SPEC]`](#swgr-benchmark-spec)
-* [`swgr client [FILE]`](#swgr-client-file)
-* [`swgr help [COMMAND]`](#swgr-help-command)
+
+- [`swgr benchmark [SPEC]`](#swgr-benchmark-spec)
+- [`swgr client [FILE]`](#swgr-client-file)
+- [`swgr help [COMMAND]`](#swgr-help-command)
 
 ## `swgr benchmark [SPEC]`
 
@@ -143,4 +149,5 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
+
 <!-- commandsstop -->
