@@ -44,7 +44,7 @@
     "./dist",
     "./oclif.manifest.json"
   ],
-  "homepage": "https://github.com/aldhosutra/swgr",
+  "homepage": "https://swgr.js.org",
   "keywords": [
     "oclif"
   ],
@@ -67,7 +67,10 @@
       }
     }
   },
-  "repository": "aldhosutra/swgr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aldhosutra/swgr.git"
+  },
   "scripts": {
     "build": "shx rm -f tsconfig.tsbuildinfo && shx rm -rf dist && tsc -b",
     "lint": "eslint",
