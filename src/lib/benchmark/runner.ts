@@ -1,5 +1,6 @@
 import * as SwaggerParser from '@apidevtools/swagger-parser'
 import * as autocannon from 'autocannon'
+import {isAbsolute, resolve} from 'node:path'
 import {OpenAPIV2, OpenAPIV3} from 'openapi-types'
 
 import {
@@ -31,7 +32,7 @@ export class BenchmarkRunner {
     this.log = logger
 
     if (args.spec && flags.spec && args.spec !== flags.spec) {
-      this.log('Warning: Both positional argument and --spec flag provided. Using positional argument.')
+      this.log('\nWarning: Both positional argument and --spec flag provided. Using positional argument.')
     }
 
     this.args = flags
@@ -116,7 +117,7 @@ export class BenchmarkRunner {
           : renderHtmlFromReport(report, sortBy)
 
       writeOutput(this.args.output, rendered)
-      this.log(`Report saved to ${this.args.output}`)
+      this.log(`\nReport saved to ${this.args.output}`)
     } else {
       renderConsoleFromReport(report, sortBy)
     }
@@ -137,7 +138,7 @@ export class BenchmarkRunner {
           : renderHtmlFromComparison(results, sortBy)
 
       writeOutput(this.args.output, rendered)
-      this.log(`Report saved to ${this.args.output}`)
+      this.log(`\nReport saved to ${this.args.output}`)
     } else {
       renderConsoleFromComparison(results, sortBy)
     }
@@ -181,7 +182,8 @@ export class BenchmarkRunner {
         }
       }
 
-      for (const pl of this.args.plugins as string[]) this._registerPlugin(pl)
+      // eslint-disable-next-line no-await-in-loop
+      for (const pl of this.args.plugins as string[]) await this._registerPlugin(pl)
 
       const endpoints = await this._runAllAndCollect(scenarios)
 
@@ -255,7 +257,8 @@ export class BenchmarkRunner {
 
   private async _registerPlugin(pluginPath: string) {
     try {
-      const imported = await import(pluginPath)
+      const resolvedPath = isAbsolute(pluginPath) ? pluginPath : resolve(process.cwd(), pluginPath)
+      const imported = await import(resolvedPath)
       const PluginClass = imported.default || imported.Plugin || imported
       const pluginHook: HookName[] = [
         'onBenchmarkStart',
@@ -278,9 +281,8 @@ export class BenchmarkRunner {
         }
       }
     } catch (error) {
-      this.log(
-        `Warning: Failed to load plugin at ${pluginPath}: ${error instanceof Error ? error.message : String(error)}`,
-      )
+      const msg = (error instanceof Error ? error.message : String(error)).split('\n')[0]
+      this.log(`\nWarning: Failed to load plugin at ${pluginPath}: ${msg}`)
     }
   }
 
@@ -288,9 +290,9 @@ export class BenchmarkRunner {
     const results: BenchmarkReport['endpoints'] = {}
     const gradeThresholds = this._parseGradeTresholds()
 
-    BenchmarkProgressBar.create(scenarios.length)
-
     for (const hook of this.hooks.onBenchmarkStart) hook(scenarios)
+
+    BenchmarkProgressBar.create(scenarios.length)
 
     for (const scenario of scenarios) {
       BenchmarkProgressBar.update(scenario.url, scenario.method!.toUpperCase())
@@ -335,15 +337,15 @@ export class BenchmarkRunner {
       BenchmarkProgressBar.increment()
     }
 
-    for (const h of this.hooks.onBenchmarkCompleted) h(scenarios, results)
-
     BenchmarkProgressBar.stop()
+
+    for (const hook of this.hooks.onBenchmarkCompleted) hook(scenarios, results)
 
     return results
   }
 
   private async _runScenario(scenario: BenchmarkScenario) {
-    for (const h of this.hooks.onScenarioStart) h(scenario)
+    for (const hook of this.hooks.onScenarioStart) hook(scenario)
 
     const result = await autocannon({
       body: scenario.body,
@@ -368,7 +370,7 @@ export class BenchmarkRunner {
       )
     }
 
-    for (const h of this.hooks.onScenarioCompleted) h(scenario, result)
+    for (const hook of this.hooks.onScenarioCompleted) hook(scenario, result)
 
     return result
   }
