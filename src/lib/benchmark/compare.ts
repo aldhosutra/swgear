@@ -30,14 +30,14 @@ export function formatPercent(val: number): string {
   return sign + Math.abs(val).toFixed(1) + '%'
 }
 
-export function compareReports(baseline: BenchmarkReport, target: BenchmarkReport): BenchmarkComparisonReport {
+export function compareReports(newReport: BenchmarkReport, oldReport: BenchmarkReport): BenchmarkComparisonReport {
   const results: BenchmarkComparisonReport = []
 
   // eslint-disable-next-line guard-for-in
-  for (const key in baseline.endpoints) {
-    const base = baseline.endpoints[key]
-    const targ = target.endpoints[key]
-    if (!targ) continue // skip if missing in target
+  for (const key in newReport.endpoints) {
+    const base = oldReport.endpoints[key]
+    const targ = newReport.endpoints[key]
+    if (!targ) continue // skip if missing in target (oldReport)
 
     results.push({
       baseline: base,
@@ -50,10 +50,10 @@ export function compareReports(baseline: BenchmarkReport, target: BenchmarkRepor
       method: base.method,
       path: base.path,
       percentChange: {
-        p50: percentChangeLatency(base.latency.p50, targ.latency.p50),
-        p90: percentChangeLatency(base.latency.p90, targ.latency.p90),
-        p99: percentChangeLatency(base.latency.p99, targ.latency.p99),
-        rps: percentChangeRps(base.rps, targ.rps),
+        p50: percentChangeLatency(targ.latency.p50, base.latency.p50),
+        p90: percentChangeLatency(targ.latency.p90, base.latency.p90),
+        p99: percentChangeLatency(targ.latency.p99, base.latency.p99),
+        rps: percentChangeRps(targ.rps, base.rps),
       },
       target: targ,
     })

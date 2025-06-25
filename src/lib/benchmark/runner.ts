@@ -127,9 +127,9 @@ export class BenchmarkRunner {
     }
   }
 
-  private _handleComparisonOutput(baselineReport: BenchmarkReport, comparisonReport: BenchmarkReport) {
+  private _handleComparisonOutput(newReport: BenchmarkReport, oldReport: BenchmarkReport) {
     const sortBy = this.args['sort-by'] || 'p50'
-    const results = compareReports(baselineReport, comparisonReport)
+    const results = compareReports(newReport, oldReport)
 
     if (this.args.output) {
       const fmt = detectFormatFromExtension(this.args.output)
