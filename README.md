@@ -58,14 +58,14 @@ FLAGS
   -s, --spec=<value>                  OpenAPI/Swagger spec file or URL
   -u, --url=<value>                   Base URL for the API
   -w, --compare-with=<value>          Comparison URL or report
-      --compare-label=<value>         [default: Comparison Report] Label for the comparison run
+      --compare-label=<value>         [default: Benchmark Baseline] Label for the comparison run
       --grade-range=<value>           Custom grading ranges for p50, p90, p99, and rps as comma-separated values.
                                       Example: "p50=50,150,300;p90=100,300,500;p99=200,500,1000;rps=100,20,10". Each
                                       value is Excellent,Good,Acceptable.
       --grade-threshold=<option>      Minimum allowed final grade for the benchmark (Excellent, Good, Acceptable, Needs
                                       Improvement). Fails if the overall grade is worse.
                                       <options: Excellent|Good|Acceptable|Needs Improvement>
-      --label=<value>                 [default: Baseline Report] Label for this benchmark run
+      --label=<value>                 [default: Benchmark Report] Label for this benchmark run
       --latency-threshold=<value>     Maximum allowed latency (ms) for p90/p95
       --p50-range=<value>             Custom grading range for p50 as comma-separated values: Excellent,Good,Acceptable.
                                       Example: "50,150,300"
