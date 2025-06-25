@@ -18,7 +18,7 @@ export default class Benchmark extends Command {
     '$ swgr benchmark api.yaml --url https://api.example.com --output result.json',
   ]
   static override flags = {
-    'compare-label': Flags.string({default: 'Comparison Report', description: 'Label for the comparison run'}),
+    'compare-label': Flags.string({default: 'Benchmark Baseline', description: 'Label for the comparison run'}),
     'compare-with': Flags.string({char: 'w', description: 'Comparison URL or report'}),
     connections: Flags.integer({char: 'c', default: 10, description: 'Number of concurrent connections'}),
     duration: Flags.integer({char: 'd', default: 10, description: 'Duration of the benchmark in seconds'}),
@@ -33,7 +33,7 @@ export default class Benchmark extends Command {
       options: ['Excellent', 'Good', 'Acceptable', 'Needs Improvement'],
       required: false,
     }),
-    label: Flags.string({default: 'Baseline Report', description: 'Label for this benchmark run'}),
+    label: Flags.string({default: 'Benchmark Report', description: 'Label for this benchmark run'}),
     'latency-threshold': Flags.integer({description: 'Maximum allowed latency (ms) for p90/p95'}),
     output: Flags.string({char: 'o', description: 'Output file'}),
     'p50-range': Flags.string({
