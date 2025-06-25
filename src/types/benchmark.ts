@@ -2,10 +2,14 @@ import * as autocannon from 'autocannon'
 
 import {BenchmarkRunner} from '../lib/benchmark/runner'
 
-export type HookName = 'onRequestResponse' | 'onScenarioComplete' | 'onScenarioStart'
+export type HookName = 'onBenchmarkCompleted' | 'onBenchmarkStart' | 'onScenarioCompleted' | 'onScenarioStart'
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export type BenchmarkHook = Record<HookName, Function[]>
+export interface BenchmarkHook {
+  onBenchmarkCompleted: Array<(scenarios: BenchmarkScenario[], results: BenchmarkReport['endpoints']) => void>
+  onBenchmarkStart: Array<(scenarios: BenchmarkScenario[]) => void>
+  onScenarioCompleted: Array<(scenario: BenchmarkScenario, result: autocannon.Result) => void>
+  onScenarioStart: Array<(scenario: BenchmarkScenario) => void>
+}
 
 export type BenchmarkArgs = {
   spec?: string

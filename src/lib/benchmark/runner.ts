@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
-
 import * as SwaggerParser from '@apidevtools/swagger-parser'
 import * as autocannon from 'autocannon'
 import {OpenAPIV2, OpenAPIV3} from 'openapi-types'
@@ -27,7 +24,7 @@ import {loadSpec} from './spec'
 
 export class BenchmarkRunner {
   private args: BenchmarkFlags
-  private hooks: BenchmarkHook
+  private hooks: {[K in HookName]: BenchmarkHook[K]}
   private log: Logger
 
   constructor(args: BenchmarkArgs, flags: BenchmarkFlags, logger: Logger) {
@@ -39,16 +36,12 @@ export class BenchmarkRunner {
 
     this.args = flags
     this.args.spec = args.spec || flags.spec
-    this.hooks = {onRequestResponse: [], onScenarioComplete: [], onScenarioStart: []}
-  }
-
-  registerHook(name: HookName, fn: Function) {
-    if (!this.hooks[name]) {
-      process.exitCode = 1
-      throw new Error(`Unknown hook ${name}`)
+    this.hooks = {
+      onBenchmarkCompleted: [],
+      onBenchmarkStart: [],
+      onScenarioCompleted: [],
+      onScenarioStart: [],
     }
-
-    this.hooks[name].push(fn)
   }
 
   async run() {
@@ -188,10 +181,7 @@ export class BenchmarkRunner {
         }
       }
 
-      for (const pl of this.args.plugins as string[]) {
-        const plugin = require(pl)
-        if (typeof plugin === 'function') plugin(this, this.args)
-      }
+      for (const pl of this.args.plugins as string[]) this._registerPlugin(pl)
 
       const endpoints = await this._runAllAndCollect(scenarios)
 
@@ -253,11 +243,54 @@ export class BenchmarkRunner {
     return gradeThresholds
   }
 
+  private _registerHook<T extends HookName>(name: T, fn: BenchmarkHook[T][number]) {
+    if (!this.hooks[name]) {
+      process.exitCode = 1
+      throw new Error(`Unknown hook ${name}`)
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.hooks[name].push(fn as any)
+  }
+
+  private async _registerPlugin(pluginPath: string) {
+    try {
+      const imported = await import(pluginPath)
+      const PluginClass = imported.default || imported.Plugin || imported
+      const pluginHook: HookName[] = [
+        'onBenchmarkStart',
+        'onBenchmarkCompleted',
+        'onScenarioStart',
+        'onScenarioCompleted',
+      ]
+      if (
+        typeof PluginClass === 'function' &&
+        pluginHook.some((hook) => typeof PluginClass.prototype[hook] === 'function')
+      ) {
+        const pluginInstance = new PluginClass()
+        for (const hook of pluginHook) {
+          if (typeof pluginInstance[hook] === 'function') {
+            this._registerHook(
+              hook as HookName,
+              pluginInstance[hook].bind(pluginInstance) as Parameters<typeof this._registerHook>[1],
+            )
+          }
+        }
+      }
+    } catch (error) {
+      this.log(
+        `Warning: Failed to load plugin at ${pluginPath}: ${error instanceof Error ? error.message : String(error)}`,
+      )
+    }
+  }
+
   private async _runAllAndCollect(scenarios: BenchmarkScenario[]): Promise<BenchmarkReport['endpoints']> {
     const results: BenchmarkReport['endpoints'] = {}
     const gradeThresholds = this._parseGradeTresholds()
 
     BenchmarkProgressBar.create(scenarios.length)
+
+    for (const hook of this.hooks.onBenchmarkStart) hook(scenarios)
 
     for (const scenario of scenarios) {
       BenchmarkProgressBar.update(scenario.url, scenario.method!.toUpperCase())
@@ -302,6 +335,8 @@ export class BenchmarkRunner {
       BenchmarkProgressBar.increment()
     }
 
+    for (const h of this.hooks.onBenchmarkCompleted) h(scenarios, results)
+
     BenchmarkProgressBar.stop()
 
     return results
@@ -316,18 +351,6 @@ export class BenchmarkRunner {
       duration: this.args.duration,
       headers: scenario.headers,
       method: scenario.method,
-      setupClient: (client) => {
-        client.on('response', (_statusCode, resBytes, _responseTime) => {
-          let parsed: unknown
-          try {
-            parsed = JSON.parse(resBytes.toString())
-          } catch {
-            return
-          }
-
-          for (const h of this.hooks.onRequestResponse) h(scenario, parsed, context)
-        })
-      },
       url: scenario.url,
     })
 
@@ -345,7 +368,7 @@ export class BenchmarkRunner {
       )
     }
 
-    for (const h of this.hooks.onScenarioComplete) h(scenario, result)
+    for (const h of this.hooks.onScenarioCompleted) h(scenario, result)
 
     return result
   }
