@@ -33,7 +33,7 @@ function HomepageHeader() {
 
 export default function Home(): ReactNode {
   return (
-    <Layout title={`swgr`} description="A CLI suite to supercharge your Swagger/OpenAPI workflow.">
+    <Layout title={`swgear`} description="A CLI suite to supercharge your Swagger/OpenAPI workflow.">
       <HomepageHeader />
       <main>
         <HomepageFeatures />

@@ -22,7 +22,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/undraw_software-engineer_xv60.svg').default,
     description: (
       <>
-        swgr is a complete toolkit for OpenAPI/Swagger development: automate validation, client generation,
+        swgear is a complete toolkit for OpenAPI/Swagger development: automate validation, client generation,
         benchmarking, reporting, and quality improvement in your API workflow. Streamline your API lifecycle from design
         to deployment.
       </>
@@ -43,7 +43,7 @@ const FeatureList: FeatureItem[] = [
     Svg: require('@site/static/img/undraw_proud-coder_9prj.svg').default,
     description: (
       <>
-        Extend swgr with plugins, custom reporting, and flexible output formats (console, CSV, HTML, JSON). Enjoy a
+        Extend swgear with plugins, custom reporting, and flexible output formats (console, CSV, HTML, JSON). Enjoy a
         modern CLI with progress bars, spinners, and clear, actionable output.
       </>
     ),

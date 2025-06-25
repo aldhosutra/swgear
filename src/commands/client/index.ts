@@ -17,7 +17,7 @@ export default class Client extends Command {
     const {args, flags} = await this.parse(Client)
 
     const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /Users/aldhosutra/Documents/Personal/project/swgr/src/commands/client.ts`)
+    this.log(`hello ${name} from /Users/aldhosutra/Documents/Personal/project/swgear/src/commands/client.ts`)
     if (args.file && flags.force) {
       this.log(`you input --force and --file: ${args.file}`)
     }

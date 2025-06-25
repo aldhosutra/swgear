@@ -8,7 +8,7 @@ import type * as Preset from '@docusaurus/preset-classic'
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'swgr',
+  title: 'swgear',
   tagline: 'A CLI suite to supercharge your Swagger/OpenAPI workflow',
   favicon: 'img/favicon.ico',
 
@@ -18,7 +18,7 @@ const config: Config = {
   },
 
   // Set the production url of your site here
-  url: 'https://swgr.js.org',
+  url: 'https://swgear.js.org',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: '/',
@@ -26,7 +26,7 @@ const config: Config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'aldhosutra', // Usually your GitHub org/user name.
-  projectName: 'swgr', // Usually your repo name.
+  projectName: 'swgear', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -47,7 +47,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/aldhosutra/swgr/',
+          editUrl: 'https://github.com/aldhosutra/swgear/',
         },
         blog: {
           showReadingTime: true,
@@ -57,7 +57,7 @@ const config: Config = {
           },
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/aldhosutra/swgr/',
+          editUrl: 'https://github.com/aldhosutra/swgear/',
           // Useful options to enforce blogging best practices
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
@@ -74,9 +74,9 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     navbar: {
-      title: 'swgr',
+      title: 'swgear',
       logo: {
-        alt: 'swgr Logo',
+        alt: 'swgear Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -123,11 +123,11 @@ const config: Config = {
           items: [
             {
               label: 'npm',
-              href: 'https://npmjs.com/package/swgr',
+              href: 'https://npmjs.com/package/swgear',
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/aldhosutra/swgr',
+              href: 'https://github.com/aldhosutra/swgear',
             },
           ],
         },

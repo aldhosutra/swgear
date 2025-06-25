@@ -1,4 +1,4 @@
-// Progress bar utility for swgr benchmark
+// Progress bar utility for swgear benchmark
 import * as cliProgress from 'cli-progress'
 
 export class BenchmarkProgressBar {
