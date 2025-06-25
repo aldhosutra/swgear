@@ -4,10 +4,8 @@ export default class Client extends Command {
   static override args = {
     file: Args.string({description: 'file to read'}),
   }
-  static override description = 'describe the command here'
-  static override examples = [
-    '<%= config.bin %> <%= command.id %>',
-  ]
+  static override description = 'Generate a TypeScript client from your OpenAPI/Swagger spec. (COMING SOON)'
+  static override examples = ['<%= config.bin %> <%= command.id %>']
   static override flags = {
     // flag with no value (-f, --force)
     force: Flags.boolean({char: 'f'}),

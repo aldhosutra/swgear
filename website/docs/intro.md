@@ -1,3 +1,7 @@
+---
+sidebar_position: 1
+---
+
 ![Header](https://raw.githubusercontent.com/aldhosutra/swgr/HEAD/website/static/img/docusaurus-social-card.jpg)
 
 # swgr
@@ -9,33 +13,37 @@ A CLI suite to supercharge your Swagger/OpenAPI workflow
 [![Downloads/week](https://img.shields.io/npm/dw/swgr.svg)](https://npmjs.org/package/swgr)
 
 <!-- toc -->
-* [swgr](#swgr)
-* [Usage](#usage)
-* [Commands](#commands)
+
+- [swgr](#swgr)
+- [Usage](#usage)
+- [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g swgr
 $ swgr COMMAND
 running command...
 $ swgr (--version)
-swgr/0.0.1 darwin-arm64 node-v18.20.3
+swgr/0.0.0 darwin-arm64 node-v18.20.3
 $ swgr --help [COMMAND]
 USAGE
   $ swgr COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-* [`swgr benchmark [SPEC]`](#swgr-benchmark-spec)
-* [`swgr client [FILE]`](#swgr-client-file)
-* [`swgr help [COMMAND]`](#swgr-help-command)
+
+- [`swgr benchmark [SPEC]`](#swgr-benchmark-spec)
+- [`swgr client [FILE]`](#swgr-client-file)
+- [`swgr help [COMMAND]`](#swgr-help-command)
 
 ## `swgr benchmark [SPEC]`
 
@@ -100,7 +108,7 @@ EXAMPLES
   $ swgr benchmark api.yaml --url https://api.example.com --output result.json
 ```
 
-_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgr/blob/v0.0.1/src/commands/benchmark/index.ts)_
+_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgr/blob/v0.0.0/src/commands/benchmark/index.ts)_
 
 ## `swgr client [FILE]`
 
@@ -124,7 +132,7 @@ EXAMPLES
   $ swgr client
 ```
 
-_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgr/blob/v0.0.1/src/commands/client/index.ts)_
+_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgr/blob/v0.0.0/src/commands/client/index.ts)_
 
 ## `swgr help [COMMAND]`
 
@@ -145,4 +153,5 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
+
 <!-- commandsstop -->

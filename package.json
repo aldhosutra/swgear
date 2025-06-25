@@ -1,22 +1,28 @@
 {
   "name": "swgr",
   "description": "A CLI suite to supercharge your Swagger/OpenAPI workflow",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "aldhosutra",
   "bin": {
     "swgr": "./bin/run.js"
   },
   "bugs": "https://github.com/aldhosutra/swgr/issues",
   "dependencies": {
+    "@apidevtools/swagger-parser": "^12.0.0",
     "@oclif/core": "^4",
     "@oclif/plugin-help": "^6",
-    "@oclif/plugin-plugins": "^5"
+    "@oclif/plugin-plugins": "^5",
+    "autocannon": "^8.0.0",
+    "axios": "^1.10.0",
+    "cli-progress": "^3.12.0"
   },
   "devDependencies": {
     "@eslint/compat": "^1",
     "@oclif/prettier-config": "^0.2.1",
     "@oclif/test": "^4",
+    "@types/autocannon": "^7.12.7",
     "@types/chai": "^4",
+    "@types/cli-progress": "^3.11.6",
     "@types/mocha": "^10",
     "@types/node": "^18",
     "chai": "^4",
@@ -25,6 +31,7 @@
     "eslint-config-prettier": "^10",
     "mocha": "^10",
     "oclif": "^4",
+    "openapi-types": "^12.1.3",
     "shx": "^0.3.3",
     "ts-node": "^10",
     "typescript": "^5"
@@ -37,31 +44,35 @@
     "./dist",
     "./oclif.manifest.json"
   ],
-  "homepage": "https://github.com/aldhosutra/swgr",
+  "homepage": "https://swgr.js.org",
   "keywords": [
     "oclif"
   ],
   "license": "MIT",
   "main": "dist/index.js",
-  
   "oclif": {
     "bin": "swgr",
     "dirname": "swgr",
     "commands": "./dist/commands",
     "plugins": [
-      "@oclif/plugin-help",
-      "@oclif/plugin-plugins"
+      "@oclif/plugin-help"
     ],
     "topicSeparator": " ",
     "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
+      "benchmark": {
+        "description": "Run performance benchmarks against your OpenAPI/Swagger API."
+      },
+      "client": {
+        "description": "Generate a TypeScript client from your OpenAPI/Swagger spec."
       }
     }
   },
-  "repository": "aldhosutra/swgr",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aldhosutra/swgr.git"
+  },
   "scripts": {
-    "build": "shx rm -rf dist && tsc -b",
+    "build": "shx rm -f tsconfig.tsbuildinfo && shx rm -rf dist && tsc -b",
     "lint": "eslint",
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "npm run lint",
