@@ -123,7 +123,7 @@ export class BenchmarkRunner {
           : renderHtmlFromReport(report, sortBy)
 
       writeOutput(this.args.output, rendered)
-      // this.log(`\n📄 Report saved to ${this.args.output}`)
+      this.log(`Report saved to ${this.args.output}`)
     } else {
       renderConsoleFromReport(report, sortBy)
     }
@@ -144,7 +144,7 @@ export class BenchmarkRunner {
           : renderHtmlFromComparison(results, sortBy)
 
       writeOutput(this.args.output, rendered)
-      // this.log(`\n📄 Report saved to ${this.args.output}`)
+      this.log(`Report saved to ${this.args.output}`)
     } else {
       renderConsoleFromComparison(results, sortBy)
     }
@@ -260,8 +260,6 @@ export class BenchmarkRunner {
     BenchmarkProgressBar.create(scenarios.length)
 
     for (const scenario of scenarios) {
-      // this.log('test')
-      // this.log(`\n🚀 Benchmarking ${scenario.method!.toUpperCase()} ${scenario.url}`)
       BenchmarkProgressBar.update(scenario.url, scenario.method!.toUpperCase())
 
       // eslint-disable-next-line no-await-in-loop

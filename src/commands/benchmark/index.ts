@@ -75,7 +75,7 @@ export default class Benchmark extends Command {
 
   public async run(): Promise<void> {
     const {args, flags} = await this.parse(Benchmark)
-    const runner = new BenchmarkRunner(args as BenchmarkArgs, flags as BenchmarkFlags, this.log)
+    const runner = new BenchmarkRunner(args as BenchmarkArgs, flags as BenchmarkFlags, this.log.bind(this))
     await runner.run()
   }
 }
