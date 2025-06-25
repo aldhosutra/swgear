@@ -1,7 +1,7 @@
 {
   "name": "swgr",
   "description": "A CLI suite to supercharge your Swagger/OpenAPI workflow",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "author": "aldhosutra",
   "bin": {
     "swgr": "./bin/run.js"
