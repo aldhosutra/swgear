@@ -1,13 +1,13 @@
 import {BenchmarkComparisonReport, BenchmarkEndpointMetrics, BenchmarkMetric, BenchmarkReport} from '../../types'
 
 function percentChangeLatency(baseline: number, comparison: number): number {
-  if (baseline === 0) return 0
-  return ((baseline - comparison) / baseline) * 100
+  if (comparison === 0) return 0
+  return ((comparison - baseline) / comparison) * 100
 }
 
 function percentChangeRps(baseline: number, comparison: number): number {
-  if (baseline === 0) return 0
-  return ((comparison - baseline) / baseline) * 100
+  if (comparison === 0) return 0
+  return ((baseline - comparison) / comparison) * 100
 }
 
 export function formatPercent(val: number): string {
