@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import * as SwaggerParser from '@apidevtools/swagger-parser'
 import * as autocannon from 'autocannon'
 import {isAbsolute, resolve} from 'node:path'
@@ -88,7 +89,29 @@ export class BenchmarkRunner {
       // Swagger 1.x: top-level basePath
       const openAPIv1 = api as unknown as SwaggerV1Document
       if (typeof openAPIv1.basePath === 'string') {
-        return openAPIv1.basePath.replace(/\/$/, '')
+        if (isUrl(openAPIv1.basePath)) {
+          return openAPIv1.basePath.replace(/\/$/, '')
+        }
+
+        // Try to get host and scheme from v2 or from the spec URL
+        let host: string | undefined = openAPIv2 && openAPIv2.host ? openAPIv2.host : undefined
+        let scheme: string = openAPIv2 && openAPIv2.schemes && openAPIv2.schemes[0] ? openAPIv2.schemes[0] : 'http'
+
+        if (!host) {
+          try {
+            const url = new URL(this.args.spec!)
+            host = url.host
+            scheme = url.protocol ? url.protocol.replace(':', '') : scheme
+          } catch {
+            host = ''
+          }
+        }
+
+        if (!host) {
+          return `${openAPIv1.basePath}`.replace(/\/$/, '')
+        }
+
+        return `${scheme}://${host}${openAPIv1.basePath}`.replace(/\/$/, '')
       }
 
       // Fallback: use the directory of the spec URL
