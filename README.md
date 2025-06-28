@@ -9,37 +9,33 @@ A CLI suite to supercharge your Swagger/OpenAPI workflow
 [![Downloads/week](https://img.shields.io/npm/dw/swgear.svg)](https://npmjs.org/package/swgear)
 
 <!-- toc -->
-
-- [swgear](#swgear)
-- [Usage](#usage)
-- [Commands](#commands)
+* [swgear](#swgear)
+* [Usage](#usage)
+* [Commands](#commands)
 <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g swgear
 $ swgear COMMAND
 running command...
 $ swgear (--version)
-swgear/0.0.1 darwin-arm64 node-v18.20.3
+swgear/0.0.2 darwin-arm64 node-v18.20.3
 $ swgear --help [COMMAND]
 USAGE
   $ swgear COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`swgear benchmark [SPEC]`](#swgear-benchmark-spec)
-- [`swgear client [FILE]`](#swgear-client-file)
-- [`swgear help [COMMAND]`](#swgear-help-command)
+* [`swgear benchmark [SPEC]`](#swgear-benchmark-spec)
+* [`swgear client [FILE]`](#swgear-client-file)
+* [`swgear help [COMMAND]`](#swgear-help-command)
 
 ## `swgear benchmark [SPEC]`
 
@@ -104,7 +100,7 @@ EXAMPLES
   $ swgear benchmark api.yaml --url https://api.example.com --output result.json
 ```
 
-_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.1/src/commands/benchmark/index.ts)_
+_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.2/src/commands/benchmark/index.ts)_
 
 ## `swgear client [FILE]`
 
@@ -128,7 +124,7 @@ EXAMPLES
   $ swgear client
 ```
 
-_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.1/src/commands/client/index.ts)_
+_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.2/src/commands/client/index.ts)_
 
 ## `swgear help [COMMAND]`
 
@@ -149,5 +145,4 @@ DESCRIPTION
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v6.2.29/src/commands/help.ts)_
-
 <!-- commandsstop -->
