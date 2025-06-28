@@ -87,7 +87,7 @@ const config: Config = {
           label: 'Getting Started',
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/aldhosutra/swgear',
           label: 'GitHub',
           position: 'right',
         },
