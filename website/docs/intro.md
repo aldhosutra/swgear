@@ -28,7 +28,7 @@ $ npm install -g swgear
 $ swgear COMMAND
 running command...
 $ swgear (--version)
-swgear/0.0.1 darwin-arm64 node-v18.20.3
+swgear/0.0.3 darwin-arm64 node-v18.20.3
 $ swgear --help [COMMAND]
 USAGE
   $ swgear COMMAND
@@ -108,7 +108,7 @@ EXAMPLES
   $ swgear benchmark api.yaml --url https://api.example.com --output result.json
 ```
 
-_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.1/src/commands/benchmark/index.ts)_
+_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.3/src/commands/benchmark/index.ts)_
 
 ## `swgear client [FILE]`
 
@@ -132,7 +132,7 @@ EXAMPLES
   $ swgear client
 ```
 
-_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.1/src/commands/client/index.ts)_
+_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.3/src/commands/client/index.ts)_
 
 ## `swgear help [COMMAND]`
 
