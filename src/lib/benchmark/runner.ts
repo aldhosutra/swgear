@@ -58,6 +58,72 @@ export class BenchmarkRunner {
     this._handleOutput(reportA, reportB)
   }
 
+  private _buildScenarios(
+    api: OpenAPIV2.Document | OpenAPIV3.Document,
+    paramMap: Record<string, string>,
+    urlOrFile: string,
+  ): BenchmarkScenario[] {
+    if (!api.paths) return []
+
+    return Object.entries(api.paths).flatMap(([path, pathMethods]) =>
+      Object.entries(pathMethods ?? {})
+        .filter(([, operation]) => typeof operation === 'object' && operation !== null && !Array.isArray(operation))
+        .map(([method, operation]) =>
+          this._createScenario(
+            path,
+            method,
+            operation as OpenAPIV2.OperationObject | OpenAPIV3.OperationObject,
+            paramMap,
+            urlOrFile,
+          ),
+        ),
+    )
+  }
+
+  // eslint-disable-next-line max-params
+  private _createScenario(
+    path: string,
+    method: string,
+    operation: OpenAPIV2.OperationObject | OpenAPIV3.OperationObject,
+    paramMap: Record<string, string>,
+    urlOrFile: string,
+  ): BenchmarkScenario {
+    const resolvedPath = this._resolvePathParams(path, paramMap)
+    const queryParams = this._extractQueryParams(operation, paramMap)
+
+    const url =
+      queryParams.length > 0 ? `${urlOrFile}${resolvedPath}?${queryParams.join('&')}` : `${urlOrFile}${resolvedPath}`
+
+    return {
+      method: method.toUpperCase() as BenchmarkScenario['method'],
+      path,
+      url,
+    }
+  }
+
+  private _extractQueryParams(
+    operation: OpenAPIV2.OperationObject | OpenAPIV3.OperationObject,
+    paramMap: Record<string, string>,
+  ): string[] {
+    if (!('parameters' in operation) || !Array.isArray(operation.parameters)) return []
+
+    return operation.parameters
+      .filter(
+        (param): param is OpenAPIV2.ParameterObject | OpenAPIV3.ParameterObject =>
+          typeof param === 'object' && param !== null && 'in' in param && param.in === 'query' && 'name' in param,
+      )
+      .map((param) => {
+        const paramName = param.name as string
+        if (paramMap[paramName]) return `${paramName}=${paramMap[paramName]}`
+        if ('schema' in param && param.schema && 'default' in param.schema) {
+          return `${paramName}=${param.schema.default}`
+        }
+
+        return null
+      })
+      .filter((entry): entry is string => entry !== null)
+  }
+
   private async _getBaseUrl(): Promise<string> {
     // If url is provided directly, use it
     if (this.args.url && isUrl(this.args.url)) return this.args.url
@@ -180,7 +246,6 @@ export class BenchmarkRunner {
     if (isUrl(urlOrFile)) {
       const spec = await loadSpec(this.args.spec!)
       const api = await SwaggerParser.dereference(spec)
-      const scenarios: BenchmarkScenario[] = []
 
       // Parse custom param values from flags.param (e.g., ["petId=123", "userId=abc"])
       const paramMap: Record<string, string> = {}
@@ -191,19 +256,7 @@ export class BenchmarkRunner {
         }
       }
 
-      if (api.paths) {
-        for (const [path, methods] of Object.entries(api.paths)) {
-          // Replace path parameters like {petId} with user-supplied or default value
-          const resolvedPath = path.replaceAll(/\{([^}]+)\}/g, (_match, p1) => paramMap[p1] ?? '1')
-          for (const [method] of Object.entries(methods)) {
-            scenarios.push({
-              method: method.toUpperCase() as BenchmarkScenario['method'],
-              path,
-              url: urlOrFile + resolvedPath,
-            })
-          }
-        }
-      }
+      const scenarios = this._buildScenarios(api as OpenAPIV2.Document | OpenAPIV3.Document, paramMap, urlOrFile)
 
       // eslint-disable-next-line no-await-in-loop
       for (const pl of this.args.plugins as string[]) await this._registerPlugin(pl)
@@ -307,6 +360,10 @@ export class BenchmarkRunner {
       const msg = (error instanceof Error ? error.message : String(error)).split('\n')[0]
       this.log(`\nWarning: Failed to load plugin at ${pluginPath}: ${msg}`)
     }
+  }
+
+  private _resolvePathParams(path: string, paramMap: Record<string, string>): string {
+    return path.replaceAll(/\{([^}]+)\}/g, (_match, p1) => paramMap[p1] ?? '1')
   }
 
   private async _runAllAndCollect(scenarios: BenchmarkScenario[]): Promise<BenchmarkReport['endpoints']> {

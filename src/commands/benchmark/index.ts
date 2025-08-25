@@ -53,7 +53,8 @@ export default class Benchmark extends Command {
     }),
     param: Flags.string({
       default: [],
-      description: 'Set default value for path parameters, e.g. --param petId=123. Can be used multiple times.',
+      description:
+        'Set default value for url path or query parameters, e.g. --param petId=123. Can be used multiple times.',
       multiple: true,
     }),
     plugins: Flags.string({char: 'p', default: [], description: 'Plugins to load', multiple: true}),

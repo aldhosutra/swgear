@@ -75,8 +75,8 @@ FLAGS
                                       Example: "100,300,500"
       --p99-range=<value>             Custom grading range for p99 as comma-separated values: Excellent,Good,Acceptable.
                                       Example: "200,500,1000"
-      --param=<value>...              [default: ] Set default value for path parameters, e.g. --param petId=123. Can be
-                                      used multiple times.
+      --param=<value>...              [default: ] Set default value for url path or query parameters, e.g. --param
+                                      petId=123. Can be used multiple times.
       --rps-range=<value>             Custom grading range for rps as comma-separated values: Excellent,Good,Acceptable.
                                       Example: "100,20,10"
       --sort-by=<option>              [default: p50] Sort comparison output by this metric (p50, p90, p99, rps)
