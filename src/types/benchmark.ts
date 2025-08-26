@@ -37,6 +37,7 @@ export type BenchmarkFlags = {
   param?: string[]
   plugins: string[]
   'rps-range'?: string
+  skip?: string[]
   'sort-by'?: BenchmarkMetric
   spec: string | undefined
   'throughput-threshold': number | undefined
@@ -49,6 +50,7 @@ export type BenchmarkScenario = {
   body?: Buffer<ArrayBufferLike> | string
   headers?: Record<string, string>
   method: autocannon.Request['method']
+  operationId?: string
   path: string
   url: string
 }

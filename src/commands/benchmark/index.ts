@@ -63,6 +63,12 @@ export default class Benchmark extends Command {
         'Custom grading range for rps as comma-separated values: Excellent,Good,Acceptable. Example: "100,20,10"',
       required: false,
     }),
+    skip: Flags.string({
+      default: [],
+      description:
+        'Skip certain operationId or endpoints by method and path, e.g. --skip /pets or --skip "POST /pets". Can be used multiple times.',
+      multiple: true,
+    }),
     'sort-by': Flags.string({
       default: 'p50',
       description: 'Sort comparison output by this metric (p50, p90, p99, rps)',

@@ -76,7 +76,20 @@ export class BenchmarkRunner {
             paramMap,
             urlOrFile,
           ),
-        ),
+        )
+        .filter((scenario) => {
+          if (!this.args.skip || (Array.isArray(this.args.skip) && this.args.skip.length === 0)) return true
+
+          return !this.args.skip.some((skip) => {
+            const parts = skip.split(' ')
+            if (parts.length === 2 && scenario.method && scenario.path) {
+              const [method, path] = parts
+              return scenario.method.toUpperCase() === method.toUpperCase() && scenario.path.includes(path)
+            }
+
+            return scenario.path.includes(skip) || (scenario.operationId && scenario.operationId.includes(skip))
+          })
+        }),
     )
   }
 
@@ -96,6 +109,7 @@ export class BenchmarkRunner {
 
     return {
       method: method.toUpperCase() as BenchmarkScenario['method'],
+      operationId: operation.operationId,
       path,
       url,
     }

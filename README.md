@@ -46,8 +46,8 @@ USAGE
   $ swgear benchmark [SPEC] [--compare-label <value>] [-w <value>] [-c <value>] [-d <value>] [--grade-range
     <value>] [--grade-threshold Excellent|Good|Acceptable|Needs Improvement] [--label <value>] [--latency-threshold
     <value>] [-o <value>] [--p50-range <value>] [--p90-range <value>] [--p99-range <value>] [--param <value>...] [-p
-    <value>...] [--rps-range <value>] [--sort-by p50|p90|p99|rps] [-s <value>] [--throughput-threshold <value>] [-u
-    <value>]
+    <value>...] [--rps-range <value>] [--skip <value>...] [--sort-by p50|p90|p99|rps] [-s <value>]
+    [--throughput-threshold <value>] [-u <value>]
 
 ARGUMENTS
   SPEC  OpenAPI/Swagger spec file or URL (positional)
@@ -79,6 +79,8 @@ FLAGS
                                       petId=123. Can be used multiple times.
       --rps-range=<value>             Custom grading range for rps as comma-separated values: Excellent,Good,Acceptable.
                                       Example: "100,20,10"
+      --skip=<value>...               [default: ] Skip certain operationId or endpoints by method and path, e.g. --skip
+                                      /pets or --skip "POST /pets". Can be used multiple times.
       --sort-by=<option>              [default: p50] Sort comparison output by this metric (p50, p90, p99, rps)
                                       <options: p50|p90|p99|rps>
       --throughput-threshold=<value>  Minimum allowed throughput (RPS)
