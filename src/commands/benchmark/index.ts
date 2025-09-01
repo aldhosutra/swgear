@@ -5,7 +5,7 @@ import {BenchmarkArgs, BenchmarkFlags} from '../../types'
 
 export default class Benchmark extends Command {
   static override args = {
-    spec: Args.string({description: 'OpenAPI/Swagger spec file or URL (positional)', required: false}),
+    input: Args.string({description: 'OpenAPI/Swagger spec file/URL or Report file (positional)', required: false}),
   }
   static override description =
     'Run HTTP benchmarks against an OpenAPI/Swagger spec or API, with optional thresholds for CI/CD.'

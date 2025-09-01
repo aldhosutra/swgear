@@ -11,6 +11,9 @@ export function writeOutput(filePath: string, content: string) {
 
 export const isUrl = (v: string) => /^https?:\/\//.test(v)
 
+export const isReportFile = (v: string | undefined) =>
+  v && (extname(v) === '.json' || extname(v) === '.csv' || extname(v) === '.html')
+
 export function detectFormatFromExtension(outputPath: string): 'csv' | 'html' | 'json' {
   const ext = extname(outputPath).toLowerCase()
   if (ext.endsWith('json')) return 'json'
@@ -37,7 +40,7 @@ export async function loadFileReport(input: string): Promise<BenchmarkReport> {
     throw new Error(`Unsupported input: ${input}`)
   }
 
-  if (!isReport(report)) {
+  if (!isReportContent(report)) {
     process.exitCode = 1
     throw new Error('Loaded file is not a valid Report')
   }
@@ -45,7 +48,7 @@ export async function loadFileReport(input: string): Promise<BenchmarkReport> {
   return report
 }
 
-function isReport(obj: Record<'endpoints' | 'label' | 'timestamp', unknown>): obj is BenchmarkReport {
+function isReportContent(obj: Record<'endpoints' | 'label' | 'timestamp', unknown>): obj is BenchmarkReport {
   return (
     obj !== undefined &&
     typeof obj === 'object' &&

@@ -21,23 +21,26 @@ import {renderConsoleFromComparison, renderConsoleFromReport} from './renderer/c
 import {renderCsvFromComparison, renderCsvFromReport} from './renderer/csv'
 import {renderHtmlFromComparison, renderHtmlFromReport} from './renderer/html'
 import {renderJsonFromComparison, renderJsonFromReport} from './renderer/json'
-import {detectFormatFromExtension, isUrl, loadFileReport, writeOutput} from './report'
+import {detectFormatFromExtension, isReportFile, isUrl, loadFileReport, writeOutput} from './report'
 import {loadSpec} from './spec'
 
 export class BenchmarkRunner {
   private args: BenchmarkFlags
   private hooks: {[K in HookName]: BenchmarkHook[K]}
+  private inputReportFile: string | undefined
   private log: Logger
 
   constructor(args: BenchmarkArgs, flags: BenchmarkFlags, logger: Logger) {
     this.log = logger
 
-    if (args.spec && flags.spec && args.spec !== flags.spec) {
-      this.log('\nWarning: Both positional argument and --spec flag provided. Using positional argument.')
+    this.inputReportFile = isReportFile(args.input) ? args.input : undefined
+
+    if (args.input && flags.spec && !this.inputReportFile && args.input !== flags.spec) {
+      this.log('\nWarning: Both positional spec argument and --spec flag provided. Using positional argument.')
     }
 
     this.args = flags
-    this.args.spec = args.spec || flags.spec
+    this.args.spec = args.input || flags.spec
     this.hooks = {
       onBenchmarkCompleted: [],
       onBenchmarkStart: [],
@@ -49,7 +52,7 @@ export class BenchmarkRunner {
   async run() {
     this._verifyArgs()
 
-    const reportA = await this._loadReportOrRun(await this._getBaseUrl(), this.args.label)
+    const reportA = await this._loadReportOrRun(await this._getBaseUrlOrReportPath(), this.args.label)
 
     const reportB = this.args['compare-with']
       ? await this._loadReportOrRun(this.args['compare-with'], this.args['compare-label'])
@@ -138,7 +141,10 @@ export class BenchmarkRunner {
       .filter((entry): entry is string => entry !== null)
   }
 
-  private async _getBaseUrl(): Promise<string> {
+  private async _getBaseUrlOrReportPath(): Promise<string> {
+    // if spec flag is a file, directly use it
+    if (this.inputReportFile) return this.inputReportFile
+
     // If url is provided directly, use it
     if (this.args.url && isUrl(this.args.url)) return this.args.url
 
@@ -472,26 +478,32 @@ export class BenchmarkRunner {
   private _verifyArgs() {
     const isSpecUrl = this.args.spec && isUrl(this.args.spec)
     const isComparison = Boolean(this.args['compare-with'])
+    const isUsingReportInput = Boolean(this.inputReportFile)
 
     // 1. spec is a URL, single benchmark: only spec required
     if (isSpecUrl && !isComparison) {
       // OK: only spec (URL) required
     }
 
-    // 2. spec is a file, single benchmark: require --url
-    if (!isSpecUrl && !isComparison && !this.args.url) {
+    // 2. spec is a json, html, or csv file (indicating benchmark report): OK
+    if (!isSpecUrl && isUsingReportInput) {
+      // OK
+    }
+
+    // 3. spec is a file, single benchmark: require --url
+    if (!isSpecUrl && !isComparison && !this.args.url && !isUsingReportInput) {
       process.exitCode = 1
       throw new Error('When using a spec file for single benchmarking, you must provide --url')
     }
 
-    // 3. spec is a URL, comparison: require --compare-with
+    // 4. spec is a URL, comparison: require --compare-with
     if (isSpecUrl && isComparison && !this.args['compare-with']) {
       process.exitCode = 1
       throw new Error('When using a spec URL for comparison, you must provide --compare-with')
     }
 
-    // 4. spec is a file, comparison: require --url and --compare-with
-    if (!isSpecUrl && isComparison) {
+    // 5. spec is a file, comparison: require --url and --compare-with
+    if (!isSpecUrl && !isUsingReportInput && isComparison) {
       if (!this.args.url) {
         process.exitCode = 1
         throw new Error('When using a spec file for comparison, you must provide --url')

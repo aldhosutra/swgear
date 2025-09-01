@@ -12,7 +12,7 @@ export interface BenchmarkHook {
 }
 
 export type BenchmarkArgs = {
-  spec?: string
+  input?: string
 }
 
 export type BenchmarkGradeThresholds = {
