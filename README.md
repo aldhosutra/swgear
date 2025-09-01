@@ -33,24 +33,24 @@ USAGE
 # Commands
 
 <!-- commands -->
-* [`swgear benchmark [SPEC]`](#swgear-benchmark-spec)
+* [`swgear benchmark [INPUT]`](#swgear-benchmark-input)
 * [`swgear client [FILE]`](#swgear-client-file)
 * [`swgear help [COMMAND]`](#swgear-help-command)
 
-## `swgear benchmark [SPEC]`
+## `swgear benchmark [INPUT]`
 
 Run HTTP benchmarks against an OpenAPI/Swagger spec or API, with optional thresholds for CI/CD.
 
 ```
 USAGE
-  $ swgear benchmark [SPEC] [--compare-label <value>] [-w <value>] [-c <value>] [-d <value>] [--grade-range
+  $ swgear benchmark [INPUT] [--compare-label <value>] [-w <value>] [-c <value>] [-d <value>] [--grade-range
     <value>] [--grade-threshold Excellent|Good|Acceptable|Needs Improvement] [--label <value>] [--latency-threshold
     <value>] [-o <value>] [--p50-range <value>] [--p90-range <value>] [--p99-range <value>] [--param <value>...] [-p
     <value>...] [--rps-range <value>] [--skip <value>...] [--sort-by p50|p90|p99|rps] [-s <value>]
     [--throughput-threshold <value>] [-u <value>]
 
 ARGUMENTS
-  SPEC  OpenAPI/Swagger spec file or URL (positional)
+  INPUT  OpenAPI/Swagger spec file/URL or Report file (positional)
 
 FLAGS
   -c, --connections=<value>           [default: 10] Number of concurrent connections

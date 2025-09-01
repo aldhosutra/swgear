@@ -28,7 +28,7 @@ $ npm install -g swgear
 $ swgear COMMAND
 running command...
 $ swgear (--version)
-swgear/0.0.4 darwin-arm64 node-v18.20.3
+swgear/0.0.5 darwin-arm64 node-v18.20.3
 $ swgear --help [COMMAND]
 USAGE
   $ swgear COMMAND
@@ -41,24 +41,24 @@ USAGE
 
 <!-- commands -->
 
-- [`swgear benchmark [SPEC]`](#swgear-benchmark-spec)
+- [`swgear benchmark [INPUT]`](#swgear-benchmark-input)
 - [`swgear client [FILE]`](#swgear-client-file)
 - [`swgear help [COMMAND]`](#swgear-help-command)
 
-## `swgear benchmark [SPEC]`
+## `swgear benchmark [INPUT]`
 
 Run HTTP benchmarks against an OpenAPI/Swagger spec or API, with optional thresholds for CI/CD.
 
 ```
 USAGE
-  $ swgear benchmark [SPEC] [--compare-label <value>] [-w <value>] [-c <value>] [-d <value>] [--grade-range
+  $ swgear benchmark [INPUT] [--compare-label <value>] [-w <value>] [-c <value>] [-d <value>] [--grade-range
     <value>] [--grade-threshold Excellent|Good|Acceptable|Needs Improvement] [--label <value>] [--latency-threshold
     <value>] [-o <value>] [--p50-range <value>] [--p90-range <value>] [--p99-range <value>] [--param <value>...] [-p
     <value>...] [--rps-range <value>] [--skip <value>...] [--sort-by p50|p90|p99|rps] [-s <value>]
     [--throughput-threshold <value>] [-u <value>]
 
 ARGUMENTS
-  SPEC  OpenAPI/Swagger spec file or URL (positional)
+  INPUT  OpenAPI/Swagger spec file/URL or Report file (positional)
 
 FLAGS
   -c, --connections=<value>           [default: 10] Number of concurrent connections
@@ -110,7 +110,7 @@ EXAMPLES
   $ swgear benchmark api.yaml --url https://api.example.com --output result.json
 ```
 
-_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.4/src/commands/benchmark/index.ts)_
+_See code: [src/commands/benchmark/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.5/src/commands/benchmark/index.ts)_
 
 ## `swgear client [FILE]`
 
@@ -134,7 +134,7 @@ EXAMPLES
   $ swgear client
 ```
 
-_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.4/src/commands/client/index.ts)_
+_See code: [src/commands/client/index.ts](https://github.com/aldhosutra/swgear/blob/v0.0.5/src/commands/client/index.ts)_
 
 ## `swgear help [COMMAND]`
 
