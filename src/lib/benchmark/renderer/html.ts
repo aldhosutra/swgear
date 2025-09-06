@@ -403,42 +403,64 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport, sor
             return '';
           };
 
-          headers.forEach(header => {
+          const gradeOrder = {
+            'Excellent': 4,
+            'Good': 3,
+            'Acceptable': 2,
+            'Needs Improvement': 1,
+            '': 0, // Handle empty or non-graded cells
+          }
+
+          const getGradeValue = (gradeString) => gradeOrder[gradeString.trim()] || 0
+
+          headers.forEach((header) => {
             header.addEventListener('click', () => {
-              const key = header.dataset.sortKey;
-              const isNumeric = ['rps', 'p50', 'p90', 'p99', 'delta', 'percentChange'].some(metric => key.includes(metric));
-              const currentDir = sortDirection[key];
-              const newDir = currentDir === 'asc' ? 'desc' : 'asc';
+              const key = header.dataset.sortKey
+              const isNumeric = ['rps', 'p50', 'p90', 'p99', 'delta', 'percentChange'].some((metric) =>
+                key.includes(metric),
+              )
+              const isGrade = key.includes('grades')
+              const currentDir = sortDirection[key]
+              const newDir = currentDir === 'asc' ? 'desc' : 'asc'
 
               // Reset all header styles and directions
-              headers.forEach(h => {
-                h.classList.remove('sort-asc', 'sort-desc');
-                sortDirection[h.dataset.sortKey] = undefined;
-              });
+              headers.forEach((h) => {
+                h.classList.remove('sort-asc', 'sort-desc')
+                sortDirection[h.dataset.sortKey] = undefined
+              })
 
               // Set new direction and class for the clicked header
-              sortDirection[key] = newDir;
-              header.classList.add(newDir === 'asc' ? 'sort-asc' : 'sort-desc');
+              sortDirection[key] = newDir
+              header.classList.add(newDir === 'asc' ? 'sort-asc' : 'sort-desc')
 
               currentRows.sort((a, b) => {
-                const headerIndex = Array.from(header.parentNode.children).indexOf(header);
-                const valA = getCellValue(a, headerIndex, isNumeric);
-                const valB = getCellValue(b, headerIndex, isNumeric);
+                const headerIndex = Array.from(header.parentNode.children).indexOf(header)
+
+                if (isGrade) {
+                  const valA = getGradeValue(a.cells[headerIndex].textContent)
+                  const valB = getGradeValue(b.cells[headerIndex].textContent)
+                  return newDir === 'asc' ? valA - valB : valB - valA
+                }
+
+                const valA = getCellValue(a, headerIndex, isNumeric)
+                const valB = getCellValue(b, headerIndex, isNumeric)
 
                 if (isNumeric) {
-                  return newDir === 'asc' ? valA - valB : valB - valA;
+                  return newDir === 'asc' ? valA - valB : valB - valA
                 } else {
-                  return newDir === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
+                  return newDir === 'asc'
+                    ? String(valA).localeCompare(String(valB))
+                    : String(valB).localeCompare(String(valA))
                 }
-              });
+              })
 
               // Re-render table with sorted rows
               while (tbody.firstChild) {
-                tbody.removeChild(tbody.firstChild);
+                tbody.removeChild(tbody.firstChild)
               }
-              currentRows.forEach(row => tbody.appendChild(row));
-            });
-          });
+              currentRows.forEach((row) => tbody.appendChild(row))
+            })
+          })
 
           endpointSearch.addEventListener('keyup', () => {
             const searchTerm = endpointSearch.value.toLowerCase();
@@ -669,10 +691,21 @@ export function renderHtmlFromReport(report: BenchmarkReport, sortBy: BenchmarkM
             return '';
           };
 
+          const gradeOrder = {
+            'Excellent': 4,
+            'Good': 3,
+            'Acceptable': 2,
+            'Needs Improvement': 1,
+            '': 0, // Handle empty or non-graded cells
+          };
+
+          const getGradeValue = (gradeString) => gradeOrder[gradeString.trim()] || 0;
+
           headers.forEach(header => {
             header.addEventListener('click', () => {
               const key = header.dataset.sortKey;
               const isNumeric = ['rps', 'p50', 'p90', 'p99', 'errors'].some(metric => key.includes(metric));
+              const isGrade = key.includes('grades');
               const currentDir = sortDirection[key];
               const newDir = currentDir === 'asc' ? 'desc' : 'asc';
 
@@ -688,6 +721,13 @@ export function renderHtmlFromReport(report: BenchmarkReport, sortBy: BenchmarkM
 
               currentRows.sort((a, b) => {
                 const headerIndex = Array.from(header.parentNode.children).indexOf(header);
+
+                if (isGrade) {
+                  const valA = getGradeValue(a.cells[headerIndex].textContent);
+                  const valB = getGradeValue(b.cells[headerIndex].textContent);
+                  return newDir === 'asc' ? valA - valB : valB - valA;
+                }
+
                 const valA = getCellValue(a, headerIndex, isNumeric);
                 const valB = getCellValue(b, headerIndex, isNumeric);
 
