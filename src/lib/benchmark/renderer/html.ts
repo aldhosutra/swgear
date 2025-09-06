@@ -180,12 +180,39 @@ const commonStyle = `
     }
 
     .chart-container {
-      width: 80%;
-      margin: 2em auto;
+      width: 95%;
+      margin: 0 auto;
       background-color: #fff;
       padding: 1em;
       border-radius: 0.25rem;
+    }
+
+    .chart-card {
+      border: 1px solid var(--border-color);
+      border-radius: 0.25rem;
+      margin-bottom: 1em;
+      background-color: #fff;
       box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .chart-card summary {
+      padding: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--primary-color);
+      outline: none;
+    }
+
+    .chart-card summary:hover {
+      background-color: var(--light-bg);
+    }
+
+    .chart-card .chart-container {
+      padding: 1em;
+      margin: 0 auto;
+      box-shadow: none;
+      border-radius: 0;
+      border-top: 1px solid var(--border-color);
     }
 
     .filter-controls {
@@ -316,22 +343,30 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport, sor
           ${rows}
         </tbody>
       </table>
-      <div class="chart-container">
-        <h2>RPS Comparison</h2>
-        <canvas id="rpsChart"></canvas>
-      </div>
-      <div class="chart-container">
-        <h2>Latency (p50) Comparison</h2>
-        <canvas id="p50Chart"></canvas>
-      </div>
-      <div class="chart-container">
-        <h2>Latency (p90) Comparison</h2>
-        <canvas id="p90Chart"></canvas>
-      </div>
-      <div class="chart-container">
-        <h2>Latency (p99) Comparison</h2>
-        <canvas id="p99Chart"></canvas>
-      </div>
+      <details class="chart-card" open>
+        <summary>RPS Comparison</summary>
+        <div class="chart-container">
+          <canvas id="rpsChart"></canvas>
+        </div>
+      </details>
+      <details class="chart-card">
+        <summary>Latency (p50) Comparison</summary>
+        <div class="chart-container">
+          <canvas id="p50Chart"></canvas>
+        </div>
+      </details>
+      <details class="chart-card">
+        <summary>Latency (p90) Comparison</summary>
+        <div class="chart-container">
+          <canvas id="p90Chart"></canvas>
+        </div>
+      </details>
+      <details class="chart-card">
+        <summary>Latency (p99) Comparison</summary>
+        <div class="chart-container">
+          <canvas id="p99Chart"></canvas>
+        </div>
+      </details>
       ${commonHtmlFooter()}
       <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -566,22 +601,30 @@ export function renderHtmlFromReport(report: BenchmarkReport, sortBy: BenchmarkM
           ${rows}
         </tbody>
       </table>
-      <div class="chart-container">
-        <h2>RPS Overview</h2>
-        <canvas id="rpsChart"></canvas>
-      </div>
-      <div class="chart-container">
-        <h2>Latency (p50) Overview</h2>
-        <canvas id="p50Chart"></canvas>
-      </div>
-      <div class="chart-container">
-        <h2>Latency (p90) Overview</h2>
-        <canvas id="p90Chart"></canvas>
-      </div>
-      <div class="chart-container">
-        <h2>Latency (p99) Overview</h2>
-        <canvas id="p99Chart"></canvas>
-      </div>
+      <details class="chart-card" open>
+        <summary>RPS Overview</summary>
+        <div class="chart-container">
+          <canvas id="rpsChart"></canvas>
+        </div>
+      </details>
+      <details class="chart-card">
+        <summary>Latency (p50) Overview</summary>
+        <div class="chart-container">
+          <canvas id="p50Chart"></canvas>
+        </div>
+      </details>
+      <details class="chart-card">
+        <summary>Latency (p90) Overview</summary>
+        <div class="chart-container">
+          <canvas id="p90Chart"></canvas>
+        </div>
+      </details>
+      <details class="chart-card">
+        <summary>Latency (p99) Overview</summary>
+        <div class="chart-container">
+          <canvas id="p99Chart"></canvas>
+        </div>
+      </details>
       ${commonHtmlFooter()}
       <script>
         document.addEventListener('DOMContentLoaded', () => {
