@@ -7,13 +7,10 @@ function generateExecutiveSummary(results: BenchmarkComparisonReport): string {
   const MODERATE_THRESHOLD = 5
   const SLIGHT_THRESHOLD = 2
 
-  let rpsImprovedCount = 0
-  let rpsWorsenedCount = 0
-  let rpsTotalChange = 0
-
-  let latencyImprovedCount = 0
-  let latencyWorsenedCount = 0
-  let latencyTotalChange = 0
+  let maxRpsImprovement = 0
+  let maxRpsWorsening = 0
+  let maxLatencyImprovement = 0
+  let maxLatencyWorsening = 0
 
   const totalEndpoints = results.length
   if (totalEndpoints === 0) {
@@ -22,21 +19,45 @@ function generateExecutiveSummary(results: BenchmarkComparisonReport): string {
 
   for (const r of results) {
     if (r.percentChange.rps !== null) {
-      if (r.percentChange.rps > SLIGHT_THRESHOLD) rpsImprovedCount++
-      if (r.percentChange.rps < -SLIGHT_THRESHOLD) rpsWorsenedCount++
-      rpsTotalChange += r.percentChange.rps
+      if (r.percentChange.rps > maxRpsImprovement) {
+        maxRpsImprovement = r.percentChange.rps
+      }
+
+      if (r.percentChange.rps < 0 && Math.abs(r.percentChange.rps) > maxRpsWorsening) {
+        maxRpsWorsening = Math.abs(r.percentChange.rps)
+      }
     }
 
-    // Using p90 for latency summary as it represents the user-perceived worst-case scenario
+    if (r.percentChange.p50 !== null) {
+      if (r.percentChange.p50 > maxLatencyImprovement) {
+        maxLatencyImprovement = r.percentChange.p50
+      }
+
+      if (r.percentChange.p50 < 0 && Math.abs(r.percentChange.p50) > maxLatencyWorsening) {
+        maxLatencyWorsening = Math.abs(r.percentChange.p50)
+      }
+    }
+
     if (r.percentChange.p90 !== null) {
-      if (r.percentChange.p90 < -SLIGHT_THRESHOLD) latencyImprovedCount++ // Negative is better
-      if (r.percentChange.p90 > SLIGHT_THRESHOLD) latencyWorsenedCount++ // Positive is worse
-      latencyTotalChange += r.percentChange.p90
+      if (r.percentChange.p90 > maxLatencyImprovement) {
+        maxLatencyImprovement = r.percentChange.p90
+      }
+
+      if (r.percentChange.p90 < 0 && Math.abs(r.percentChange.p90) > maxLatencyWorsening) {
+        maxLatencyWorsening = Math.abs(r.percentChange.p90)
+      }
+    }
+
+    if (r.percentChange.p99 !== null) {
+      if (r.percentChange.p99 > maxLatencyImprovement) {
+        maxLatencyImprovement = r.percentChange.p99
+      }
+
+      if (r.percentChange.p99 < 0 && Math.abs(r.percentChange.p99) > maxLatencyWorsening) {
+        maxLatencyWorsening = Math.abs(r.percentChange.p99)
+      }
     }
   }
-
-  const avgRpsChange = rpsTotalChange / totalEndpoints
-  const avgLatencyChange = latencyTotalChange / totalEndpoints
 
   const getMagnitude = (change: number): string => {
     const absChange = Math.abs(change)
@@ -46,60 +67,53 @@ function generateExecutiveSummary(results: BenchmarkComparisonReport): string {
     return ''
   }
 
-  const rpsStatus = getMagnitude(avgRpsChange)
-  const latencyStatus = getMagnitude(avgLatencyChange)
+  const rpsImproves = maxRpsImprovement > maxRpsWorsening
+  const rpsWorsens = maxRpsWorsening > maxRpsImprovement
+  const latencyImproves = maxLatencyImprovement > maxLatencyWorsening
+  const latencyWorsens = maxLatencyWorsening > maxLatencyImprovement
 
-  const rpsImproves = avgRpsChange > SLIGHT_THRESHOLD
-  const rpsWorsens = avgRpsChange < -SLIGHT_THRESHOLD
-  const latencyImproves = avgLatencyChange < -SLIGHT_THRESHOLD
-  const latencyWorsens = avgLatencyChange > SLIGHT_THRESHOLD
+  const rpsMag = getMagnitude(rpsImproves ? maxRpsImprovement : -maxRpsWorsening)
+  const latMag = getMagnitude(latencyImproves ? maxLatencyImprovement : -maxLatencyWorsening)
 
-  const rpsDesc = `RPS <strong>${rpsImproves ? 'up' : 'down'} ${Math.abs(avgRpsChange).toFixed(0)}%</strong>`
-  const latencyDesc = `latency <strong>${latencyImproves ? 'down' : 'up'} ${Math.abs(avgLatencyChange).toFixed(
-    0,
-  )}%</strong>`
+  const rpsDesc = `RPS improving by up to <strong>${maxRpsImprovement.toFixed(0)}%</strong>`
+  const rpsWorsenDesc = `RPS regressing by up to <strong>${maxRpsWorsening.toFixed(0)}%</strong>`
+  const latDesc = `latency improving by up to <strong>${maxLatencyImprovement.toFixed(0)}%</strong>`
+  const latWorsenDesc = `latency regressing by up to <strong>${maxLatencyWorsening.toFixed(0)}%</strong>`
 
-  // Case 1: Both improve
   if (rpsImproves && latencyImproves) {
-    const magnitude = getMagnitude(Math.max(avgRpsChange, Math.abs(avgLatencyChange)))
-    return `This benchmark shows a <strong>${magnitude} positive result</strong>, with average ${rpsDesc} and ${latencyDesc}.`
+    const mag = getMagnitude(Math.max(maxRpsImprovement, maxLatencyImprovement))
+    return `This benchmark shows a <strong>${mag} positive result</strong>, with ${rpsDesc} and ${latDesc}.`
   }
 
-  // Case 2: Both worsen
   if (rpsWorsens && latencyWorsens) {
-    const magnitude = getMagnitude(Math.max(Math.abs(avgRpsChange), avgLatencyChange))
-    return `This benchmark shows a <strong>${magnitude} performance regression</strong>, with average ${rpsDesc} and ${latencyDesc}.`
+    const mag = getMagnitude(Math.max(maxRpsWorsening, maxLatencyWorsening))
+    return `This benchmark shows a <strong>${mag} performance regression</strong>, with ${rpsWorsenDesc} and ${latWorsenDesc}.`
   }
 
-  // Case 3: Mixed - RPS improves, Latency worsens
   if (rpsImproves && latencyWorsens) {
-    return `This update shows mixed results: a <strong>${rpsStatus.toLowerCase()} ${rpsDesc}</strong>, but at the cost of a <strong>${latencyStatus.toLowerCase()} ${latencyDesc}</strong>.`
+    return `This update shows mixed results: a <strong>${rpsMag.toLowerCase()} ${rpsDesc}</strong>, but at the cost of a <strong>${latMag.toLowerCase()} ${latWorsenDesc}</strong>.`
   }
 
-  // Case 4: Mixed - Latency improves, RPS worsens
   if (latencyImproves && rpsWorsens) {
-    return `This update shows mixed results: a <strong>${latencyStatus.toLowerCase()} ${latencyDesc}</strong>, but at the cost of a <strong>${rpsStatus.toLowerCase()} ${rpsDesc}</strong>.`
+    return `This update shows mixed results: a <strong>${latMag.toLowerCase()} ${latDesc}</strong>, but at the cost of a <strong>${rpsMag.toLowerCase()} ${rpsWorsenDesc}</strong>.`
   }
 
-  // Case 5 & 6: Only one improves
   if (rpsImproves) {
-    return `This benchmark shows a <strong>${rpsStatus} positive result</strong>, driven entirely by an average ${rpsDesc} with no significant change in latency.`
+    return `This benchmark shows a <strong>${rpsMag} positive result</strong>, driven by ${rpsDesc} with no significant change in latency.`
   }
 
   if (latencyImproves) {
-    return `This benchmark shows a <strong>${latencyStatus} positive result</strong>, driven entirely by an average ${latencyDesc} with no significant change in RPS.`
+    return `This benchmark shows a <strong>${latMag} positive result</strong>, driven by ${latDesc} with no significant change in RPS.`
   }
 
-  // Case 7 & 8: Only one worsens
   if (rpsWorsens) {
-    return `This benchmark shows a <strong>${rpsStatus} performance regression</strong>, driven entirely by an average ${rpsDesc} with no significant change in latency.`
+    return `This benchmark shows a <strong>${rpsMag} performance regression</strong>, driven by ${rpsWorsenDesc} with no significant change in latency.`
   }
 
   if (latencyWorsens) {
-    return `This benchmark shows a <strong>${latencyStatus} performance regression</strong>, driven entirely by an average ${latencyDesc} with no significant change in RPS.`
+    return `This benchmark shows a <strong>${latMag} performance regression</strong>, driven by ${latWorsenDesc} with no significant change in RPS.`
   }
 
-  // Case 9: No significant change
   return 'This benchmark shows <strong>no significant change</strong> in overall performance.'
 }
 
@@ -184,7 +198,7 @@ const commonStyle = `
       background-color: #fff;
     }
 
-    th,
+    th, 
     td {
       padding: 0.75em 1em;
       border: 1px solid var(--border-color);
@@ -202,7 +216,7 @@ const commonStyle = `
       cursor: pointer; /* Indicate sortable */
     }
 
-    th[data-sort-key].sort-asc::after,
+    th[data-sort-key].sort-asc::after, 
     th[data-sort-key].sort-desc::after {
       display: inline-block;
       margin-left: 0.5em;
