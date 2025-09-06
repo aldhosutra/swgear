@@ -1,5 +1,107 @@
+/* eslint-disable complexity */
 import {BenchmarkComparisonReport, BenchmarkMetric, BenchmarkReport} from '../../../types'
 import {formatPercent, sortComparisonResults, sortEndpoints} from '../compare'
+
+function generateExecutiveSummary(results: BenchmarkComparisonReport): string {
+  const SIGNIFICANT_THRESHOLD = 20
+  const MODERATE_THRESHOLD = 5
+  const SLIGHT_THRESHOLD = 2
+
+  let rpsImprovedCount = 0
+  let rpsWorsenedCount = 0
+  let rpsTotalChange = 0
+
+  let latencyImprovedCount = 0
+  let latencyWorsenedCount = 0
+  let latencyTotalChange = 0
+
+  const totalEndpoints = results.length
+  if (totalEndpoints === 0) {
+    return 'No comparison data available to generate a summary.'
+  }
+
+  for (const r of results) {
+    if (r.percentChange.rps !== null) {
+      if (r.percentChange.rps > SLIGHT_THRESHOLD) rpsImprovedCount++
+      if (r.percentChange.rps < -SLIGHT_THRESHOLD) rpsWorsenedCount++
+      rpsTotalChange += r.percentChange.rps
+    }
+
+    // Using p90 for latency summary as it represents the user-perceived worst-case scenario
+    if (r.percentChange.p90 !== null) {
+      if (r.percentChange.p90 < -SLIGHT_THRESHOLD) latencyImprovedCount++ // Negative is better
+      if (r.percentChange.p90 > SLIGHT_THRESHOLD) latencyWorsenedCount++ // Positive is worse
+      latencyTotalChange += r.percentChange.p90
+    }
+  }
+
+  const avgRpsChange = rpsTotalChange / totalEndpoints
+  const avgLatencyChange = latencyTotalChange / totalEndpoints
+
+  const getMagnitude = (change: number): string => {
+    const absChange = Math.abs(change)
+    if (absChange > SIGNIFICANT_THRESHOLD) return 'Significant'
+    if (absChange > MODERATE_THRESHOLD) return 'Moderate'
+    if (absChange > SLIGHT_THRESHOLD) return 'Slight'
+    return ''
+  }
+
+  const rpsStatus = getMagnitude(avgRpsChange)
+  const latencyStatus = getMagnitude(avgLatencyChange)
+
+  const rpsImproves = avgRpsChange > SLIGHT_THRESHOLD
+  const rpsWorsens = avgRpsChange < -SLIGHT_THRESHOLD
+  const latencyImproves = avgLatencyChange < -SLIGHT_THRESHOLD
+  const latencyWorsens = avgLatencyChange > SLIGHT_THRESHOLD
+
+  const rpsDesc = `RPS <strong>${rpsImproves ? 'up' : 'down'} ${Math.abs(avgRpsChange).toFixed(0)}%</strong>`
+  const latencyDesc = `latency <strong>${latencyImproves ? 'down' : 'up'} ${Math.abs(avgLatencyChange).toFixed(
+    0,
+  )}%</strong>`
+
+  // Case 1: Both improve
+  if (rpsImproves && latencyImproves) {
+    const magnitude = getMagnitude(Math.max(avgRpsChange, Math.abs(avgLatencyChange)))
+    return `This benchmark shows a <strong>${magnitude} positive result</strong>, with average ${rpsDesc} and ${latencyDesc}.`
+  }
+
+  // Case 2: Both worsen
+  if (rpsWorsens && latencyWorsens) {
+    const magnitude = getMagnitude(Math.max(Math.abs(avgRpsChange), avgLatencyChange))
+    return `This benchmark shows a <strong>${magnitude} performance regression</strong>, with average ${rpsDesc} and ${latencyDesc}.`
+  }
+
+  // Case 3: Mixed - RPS improves, Latency worsens
+  if (rpsImproves && latencyWorsens) {
+    return `This update shows mixed results: a <strong>${rpsStatus.toLowerCase()} ${rpsDesc}</strong>, but at the cost of a <strong>${latencyStatus.toLowerCase()} ${latencyDesc}</strong>.`
+  }
+
+  // Case 4: Mixed - Latency improves, RPS worsens
+  if (latencyImproves && rpsWorsens) {
+    return `This update shows mixed results: a <strong>${latencyStatus.toLowerCase()} ${latencyDesc}</strong>, but at the cost of a <strong>${rpsStatus.toLowerCase()} ${rpsDesc}</strong>.`
+  }
+
+  // Case 5 & 6: Only one improves
+  if (rpsImproves) {
+    return `This benchmark shows a <strong>${rpsStatus} positive result</strong>, driven entirely by an average ${rpsDesc} with no significant change in latency.`
+  }
+
+  if (latencyImproves) {
+    return `This benchmark shows a <strong>${latencyStatus} positive result</strong>, driven entirely by an average ${latencyDesc} with no significant change in RPS.`
+  }
+
+  // Case 7 & 8: Only one worsens
+  if (rpsWorsens) {
+    return `This benchmark shows a <strong>${rpsStatus} performance regression</strong>, driven entirely by an average ${rpsDesc} with no significant change in latency.`
+  }
+
+  if (latencyWorsens) {
+    return `This benchmark shows a <strong>${latencyStatus} performance regression</strong>, driven entirely by an average ${latencyDesc} with no significant change in RPS.`
+  }
+
+  // Case 9: No significant change
+  return 'This benchmark shows <strong>no significant change</strong> in overall performance.'
+}
 
 function commonHtmlHead(title: string, style: string): string {
   return `
@@ -248,11 +350,23 @@ const commonStyle = `
       flex-grow: 1;
       max-width: 300px;
     }
+
+    .executive-summary {
+      background-color: #fff;
+      border: 1px solid var(--border-color);
+      border-left: 5px solid var(--primary-color);
+      padding: 1em 1.5em;
+      margin-bottom: 2em;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+      font-size: 1.1em;
+      text-align: center;
+    }
   </style>
 `
 
 export function renderHtmlFromComparison(results: BenchmarkComparisonReport, sortBy: BenchmarkMetric = 'p50'): string {
   const sortedResults = sortComparisonResults(results, sortBy)
+  const executiveSummary = generateExecutiveSummary(sortedResults)
 
   const rows = sortedResults
     .map(
@@ -316,6 +430,7 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport, sor
     ${commonHtmlHead('swgear Comparison Report', commonStyle)}
     <body>
       <h1>swgear Comparison Report</h1>
+      <div class="executive-summary">${executiveSummary}</div>
       <div class="filter-controls">
         <label for="endpointSearch">Search Endpoint:</label>
         <input type="text" id="endpointSearch" placeholder="Type to search Method or Path...">
