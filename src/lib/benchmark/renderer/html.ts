@@ -96,8 +96,19 @@ const commonStyle = `
       cursor: pointer; /* Indicate sortable */
     }
 
-    th:hover {
-      background-color: #e0e0e0;
+    th[data-sort-key].sort-asc::after,
+    th[data-sort-key].sort-desc::after {
+      display: inline-block;
+      margin-left: 0.5em;
+      opacity: 1;
+    }
+
+    th[data-sort-key].sort-asc::after {
+      content: '\u25B2'; /* Up arrow */
+    }
+
+    th[data-sort-key].sort-desc::after {
+      content: '\u25BC'; /* Down arrow */
     }
 
     tbody tr:nth-child(even) {
@@ -395,11 +406,19 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport, sor
           headers.forEach(header => {
             header.addEventListener('click', () => {
               const key = header.dataset.sortKey;
-              // Determine if the column is numeric based on its key
               const isNumeric = ['rps', 'p50', 'p90', 'p99', 'delta', 'percentChange'].some(metric => key.includes(metric));
+              const currentDir = sortDirection[key];
+              const newDir = currentDir === 'asc' ? 'desc' : 'asc';
 
-              // Toggle sort direction
-              sortDirection[key] = sortDirection[key] === 'asc' ? 'desc' : 'asc';
+              // Reset all header styles and directions
+              headers.forEach(h => {
+                h.classList.remove('sort-asc', 'sort-desc');
+                sortDirection[h.dataset.sortKey] = undefined;
+              });
+
+              // Set new direction and class for the clicked header
+              sortDirection[key] = newDir;
+              header.classList.add(newDir === 'asc' ? 'sort-asc' : 'sort-desc');
 
               currentRows.sort((a, b) => {
                 const headerIndex = Array.from(header.parentNode.children).indexOf(header);
@@ -407,9 +426,9 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport, sor
                 const valB = getCellValue(b, headerIndex, isNumeric);
 
                 if (isNumeric) {
-                  return sortDirection[key] === 'asc' ? valA - valB : valB - valA;
+                  return newDir === 'asc' ? valA - valB : valB - valA;
                 } else {
-                  return sortDirection[key] === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
+                  return newDir === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
                 }
               });
 
@@ -653,11 +672,19 @@ export function renderHtmlFromReport(report: BenchmarkReport, sortBy: BenchmarkM
           headers.forEach(header => {
             header.addEventListener('click', () => {
               const key = header.dataset.sortKey;
-              // Determine if the column is numeric based on its key
               const isNumeric = ['rps', 'p50', 'p90', 'p99', 'errors'].some(metric => key.includes(metric));
+              const currentDir = sortDirection[key];
+              const newDir = currentDir === 'asc' ? 'desc' : 'asc';
 
-              // Toggle sort direction
-              sortDirection[key] = sortDirection[key] === 'asc' ? 'desc' : 'asc';
+              // Reset all header styles and directions
+              headers.forEach(h => {
+                h.classList.remove('sort-asc', 'sort-desc');
+                sortDirection[h.dataset.sortKey] = undefined;
+              });
+
+              // Set new direction and class for the clicked header
+              sortDirection[key] = newDir;
+              header.classList.add(newDir === 'asc' ? 'sort-asc' : 'sort-desc');
 
               currentRows.sort((a, b) => {
                 const headerIndex = Array.from(header.parentNode.children).indexOf(header);
@@ -665,9 +692,9 @@ export function renderHtmlFromReport(report: BenchmarkReport, sortBy: BenchmarkM
                 const valB = getCellValue(b, headerIndex, isNumeric);
 
                 if (isNumeric) {
-                  return sortDirection[key] === 'asc' ? valA - valB : valB - valA;
+                  return newDir === 'asc' ? valA - valB : valB - valA;
                 } else {
-                  return sortDirection[key] === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
+                  return newDir === 'asc' ? String(valA).localeCompare(String(valB)) : String(valB).localeCompare(String(valA));
                 }
               });
 
