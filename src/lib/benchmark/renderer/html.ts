@@ -27,7 +27,11 @@ function commonHtmlFooter(): string {
         <a href="https://swgear.js.org" target="_blank" rel="noopener noreferrer">Visit the website</a>
       </p>
     </div>
+  `
+}
 
+function technicalTermsExplanation(): string {
+  return `
     <details class="technical-terms">
       <summary>Explanation of Technical Terms</summary>
       <p><strong>RPS (Requests Per Second):</strong> The number of requests the system can handle per second. Higher is generally better.</p>
@@ -168,7 +172,6 @@ const commonStyle = `
     }
 
     .technical-terms {
-      margin-top: 2em;
       border: 1px solid var(--border-color);
       padding: 1em;
       border-radius: 0.25rem;
@@ -378,6 +381,7 @@ export function renderHtmlFromComparison(results: BenchmarkComparisonReport, sor
           <canvas id="p99Chart"></canvas>
         </div>
       </details>
+      ${technicalTermsExplanation()}
       ${commonHtmlFooter()}
       <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -666,6 +670,7 @@ export function renderHtmlFromReport(report: BenchmarkReport, sortBy: BenchmarkM
           <canvas id="p99Chart"></canvas>
         </div>
       </details>
+      ${technicalTermsExplanation()}
       ${commonHtmlFooter()}
       <script>
         document.addEventListener('DOMContentLoaded', () => {
